@@ -1,0 +1,3003 @@
+'BOM Upload
+'CSV Layout. It requires that fields be wrapped in double quotes. Cannot have extra lines at the end.
+'       01  WS-CSV-REC.                                                             
+'           05  WS-PARENT            PIC X(30).                                     
+'           05  WS-PART              PIC X(30).                                     
+'           05  WS-QTY               PIC S9(8)V9(6).                                
+'           05  WS-DESC.                                                            
+'               15  WS-DESC-1        PIC X(30).                                     
+'               15  WS-DESC-2        PIC X(30).                                     
+'           05  WS-PL                PIC X(30).                                     
+'           05  WS-SORT              PIC X(30).                                     
+'           05  WS-DRAWING           PIC X(30).                                     
+'           05  WS-TAG               PIC X(30).                                     
+'           05  WS-MEMO1             PIC X(30).                                     
+'           05  WS-MEMO2             PIC X(30).                                     
+'           05  WS-PARENT-DESC.                                           
+'               15  WS-PARENT-DESC-1 PIC X(30).                                     
+'               15  WS-PARENT-DESC-2 PIC X(30).                                     
+'           05  WS-PARENT-LOCN       PIC X(30).                           
+'           05  WS-PARENT-REV        PIC X(30).                           
+'           05  WS-PARENT-UM         PIC X(30).                           
+'           05  WS-PARENT-COST       PIC S9(8)V9(4).                      
+'           05  WS-PARENT-SOURCE     PIC X(30).                           
+'           05  WS-PARENT-SORT       PIC X(30).                           
+'           05  WS-PARENT-MEMO1      PIC X(30).                           
+'           05  WS-PARENT-MEMO2      PIC X(30).                           
+'           05  WS-CHILD-LOCN        PIC X(30).                           
+'           05  WS-CHILD-REV         PIC X(30).                           
+'           05  WS-CHILD-UM          PIC X(30).                           
+'           05  WS-CHILD-COST        PIC S9(8)V9(4).                      
+'           05  WS-CHILD-SOURCE      PIC X(30).                           
+'           05  WS-CHILD-CATEGORY    PIC X(30).                      
+
+'Sales Order Line Upload
+'       01  ORDADL-RECORD.
+'               10  ORDADL-TRANSACTION             PIC X.
+'                   88  ORDADL-ORDER               VALUE "O".
+'                   88  ORDADL-QUOTE               VALUE "Q".
+'               10  ORDADL-CUST-PROSP-NBR          PIC X(07).
+'               10  ORDADL-ORDER-QUOTE-NO          PIC X(7).
+'               10  ORDADL-PART-NUMBER             PIC X(38).
+'               10  ORDADL-PARTREV      REDEFINES ORDADL-PART-NUMBER.
+'                   15  ORDADL-PART-17             PIC X(17).
+'                   15  ORDADL-PART-REV            PIC X(03).
+'                   15  FILLER                     PIC X(18).
+'               10  ORDADL-PART-LOCN               PIC X(02).
+'               10  ORDADL-PROD-LINE               PIC X(05).
+'               10  ORDADL-DESCRIPTION             PIC X(30).
+'               10  ORDADL-LINE-NBR                PIC 9(03).
+'               10  ORDADL-LN-TYPE                 PIC X.
+'                   88  ORDADL-TYPE-BUYOUT         VALUE "B".
+'                   88  ORDADL-TYPE-CONSIGNMENT    VALUE "C".
+'                   88  ORDADL-TYPE-DROPSHIP       VALUE "D".
+'                   88  ORDADL-TYPE-PROGRESS       VALUE "P".            EW#36639      
+'                   88  ORDADL-TYPE-STANDARD       VALUE "S".
+'               10  ORDADL-QTY-ORDERED             PIC S9(09)V9(4).
+'               10  ORDADL-WEIGHT                  PIC S9(07)V9(3).
+'      **   If price sent must be in customer's currency
+'               10  ORDADL-QUOTED-PRICE            PIC S9(10)V9(6).
+'               10  ORDADL-LN-USER-BLOCK.
+'                   15  ORDADL-LN-USER-1           PIC X(30).
+'                   15  ORDADL-LN-USER-2           PIC X(30).
+'                   15  ORDADL-LN-USER-3           PIC X(30).
+'                   15  ORDADL-LN-USER-4           PIC X(30).
+'                   15  ORDADL-LN-USER-5           PIC X(30).
+'               10  FILLER REDEFINES ORDADL-LN-USER-BLOCK.
+'                   15  ORDADL-LN-USER OCCURS 5    PIC X(30).
+'               10  ORDADL-UNIT-OF-MEASURE         PIC XX.
+'               10  ORDADL-ACCEPT-ZERO-PRICE       PIC 9.                A2140618
+'               10  ORDADL-SURVEY-NO               PIC S9(8).            A2140618
+'               10  ORDADL-RTR-VAL-FLG             PIC X.                A2140618
+'                   88  ORDADL-VALIDATE            VALUE "V".            A2140618
+'                   88  ORDADL-BUYOUT              VALUE "B".            A2140618
+'                   88  ORDADL-NO-VALIDATE         VALUE "N".            A2140618
+'               10  ORDADL-LENGTH                  PIC S9(8)V9(4).	    
+'               10  ORDADL-WIDTH                   PIC S9(8)V9(4).       A2140618
+'               10  ORDADL-ACCEPT-COST-OVRD        PIC 9.                JP141112
+'                   88  ORDADL-ACCEPT-COST-OVRD-YES VALUE 1.             JP141112
+'                   88  ORDADL-ACCEPT-COST-OVRD-NO  VALUE 0.             JP141112
+'               10  ORDADL-COST                    PIC S9(10)V9(6).      JP141112
+'               10  ORDADL-ACCEPT-TAX-OVRD         PIC 9.                JP141112
+'                   88  ORDADL-ACCEPT-TAX-OVRD-YES VALUE 1.              JP141112
+'                   88  ORDADL-ACCEPT-TAX-OVRD-NO  VALUE 0.              JP141112
+'               10  ORDADL-TAX-FLAG                PIC X.                JP141112
+'                   88  ORDADL-TAXABLE             VALUE "T".            JP141112
+'                   88  ORDADL-TAX-EXEMPT          VALUE "E".            JP141112
+'               10  FILLER                         PIC X(45).            JP141112
+           
+Program.Sub.ScreenSU.Start
+Gui.F_MTCImport..Create
+Gui.F_MTCImport..Caption("MesTex Configurator")
+Gui.F_MTCImport..Size(8670,6000)
+Gui.F_MTCImport..MinX(0)
+Gui.F_MTCImport..MinY(0)
+Gui.F_MTCImport..Position(0,0)
+Gui.F_MTCImport..BackColor(-2147483633)
+Gui.F_MTCImport..MousePointer(0)
+Gui.F_MTCImport..Event(UnLoad,Unload)
+Gui.F_MTCImport.txtUnitType.Create(TextBox,"",True,3255,300,0,360,360,True,0,"Arial",8,-2147483643,1)
+Gui.F_MTCImport.lbl1.Create(Label,"Unit Type",True,960,255,0,360,150,True,0,"Arial",8,-2147483633,0)
+Gui.F_MTCImport.cmdUnit_Browser.Create(Button)
+Gui.F_MTCImport.cmdUnit_Browser.Size(465,375)
+Gui.F_MTCImport.cmdUnit_Browser.Position(3735,315)
+Gui.F_MTCImport.cmdUnit_Browser.Caption("^")
+Gui.F_MTCImport.cmdUnit_Browser.Event(Click,cmdUnit_Browser_Click)
+Gui.F_MTCImport.txtDescription.Create(TextBox,"",False,3885,300,0,4320,360,True,0,"Arial",8,255,1)
+Gui.F_MTCImport.lbl2.Create(Label,"Description",False,1935,255,0,4320,150,True,0,"Arial",8,-2147483633,0)
+Gui.F_MTCImport.txtTag.Create(TextBox,"",True,7875,300,0,360,1020,True,0,"Arial",8,-2147483643,1)
+Gui.F_MTCImport.lbl3.Create(Label,"Tag",True,525,255,0,360,810,True,0,"Arial",8,-2147483633,0)
+Gui.F_MTCImport.lbl4.Create(Label,"Paste text for processing",True,1935,255,0,360,1530,True,0,"Arial",8,-2147483633,0)
+Gui.F_MTCImport.cmdPaste.Create(Button)
+Gui.F_MTCImport.cmdPaste.Size(465,375)
+Gui.F_MTCImport.cmdPaste.Position(2310,1395)
+Gui.F_MTCImport.cmdPaste.Event(Click,cmdPaste_Click)
+'Gui.F_MTCImport.cmdPaste.Picture("\\DLSRV-gs002\apps\Global\PLUGINS\GAB\GAS\GCG_5176_Clipboard.bmp")
+Gui.F_MTCImport.mltProcess_Text.Create(TextboxM)
+Gui.F_MTCImport.mltProcess_Text.Size(7860,2610)
+Gui.F_MTCImport.mltProcess_Text.Position(360,1845)
+Gui.F_MTCImport.cmdOk.Create(Button)
+Gui.F_MTCImport.cmdOk.Size(1470,600)
+Gui.F_MTCImport.cmdOk.Position(2580,4635)
+Gui.F_MTCImport.cmdOk.Caption("Ok")
+Gui.F_MTCImport.cmdOk.Event(Click,cmdOk_Click)
+Gui.F_MTCImport.cmdCancel.Create(Button)
+Gui.F_MTCImport.cmdCancel.Size(1470,600)
+Gui.F_MTCImport.cmdCancel.Position(4335,4635)
+Gui.F_MTCImport.cmdCancel.Caption("Cancel")
+Gui.F_MTCImport.cmdCancel.Event(Click,Unload)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+V.Global.sProcessText.Declare(String)
+V.Global.sLogFilePath.Declare(String)
+V.Global.sLogFileText.Declare(String)
+V.Global.iFloat.Declare(Long)
+V.Global.iCallCount.Declare(Long)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.Try
+	V.Local.sTemp.Declare(String)
+	
+'10/25/21 Edited the script to work in 2020.1 for MESTEX -SS
+'Also removed the check for the V.caller.user
+
+
+	'For testing for specific users in the test system
+	'F.Intrinsic.Control.If(V.Caller.User,=,"SSTALLIN","OR",V.Caller.User,=,"PNICKSON",V.Caller.User,=,"LRABE")
+		'Makes testing things much much easier
+		F.Intrinsic.Control.If(V.Caller.CompanyCode,=,"638")
+			Gui.F_MTCImport.txtUnitType.Text("DFL")
+			Gui.F_MTCImport.txtTag.Text("MUA1")
+			F.Intrinsic.String.Build("DFLB4AHRBA23010ZC0EZB2ZZZZZZZZZZZA1A2B1B4E1{0}FDA003600154000000{0}0033102E1DA",V.Ambient.NewLine,V.Local.sTemp)
+			Gui.F_MTCImport.mltProcess_Text.Text(V.Local.sTemp)
+		F.Intrinsic.Control.EndIf
+		
+		'Open connection and show Screen
+		F.ODBC.Connection!con.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass,600)
+		Gui.F_MTCImport..Show
+	'F.Intrinsic.Control.EndIf
+
+
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.cmdUnit_Browser_Click.Start
+F.Intrinsic.Control.Try
+	V.Local.sSQL.Declare(String)
+	V.Local.sColumnTitles.Declare(String)
+	V.Local.iColumnWidths.Declare(Long)
+	V.Local.sReturn.Declare(String)
+
+	'Browser to select the Unit Type
+	F.Intrinsic.String.Split("Unit Types*!*Description","*!*",V.Local.sColumnTitles)
+	F.Intrinsic.String.Split("1000*!*1200","*!*",V.Local.iColumnWidths)
+	
+	F.Intrinsic.UI.Browser("Select Unit Type:","con","SELECT DISTINCT UnitType, Description FROM MTC_HEADER ORDER BY UnitType",V.Local.sColumnTitles,V.Local.iColumnWidths,V.Local.sReturn)
+	
+	F.Intrinsic.Control.If(V.Local.sReturn,<>,"***CANCEL***")
+		F.Intrinsic.String.Split(V.Local.sReturn,"*!*",V.Local.sReturn)
+		Gui.F_MTCImport.txtUnitType.Text(V.Local.sReturn(0).Trim)
+		Gui.F_MTCImport.txtDescription.Text(V.Local.sReturn(1).Trim)
+	F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdUnit_Browser_Click.End
+
+Program.Sub.cmdPaste_Click.Start
+F.Intrinsic.Control.Try
+	V.Local.sPaste.Declare(String)
+	
+	'Get the copied text to add it to the multiline text box for processing
+	F.Intrinsic.UI.GetClipboardText(V.Local.sPaste)
+	Gui.F_MTCImport.mltProcess_Text.Text(V.Local.sPaste)
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdPaste_Click.End
+
+Program.Sub.cmdOk_Click.Start
+F.Intrinsic.Control.Try
+	V.Local.sUnitType.Declare(String)
+	
+	Gui.F_MTCImport..Enabled(False)
+	
+	V.Local.sUnitType.Set(V.Screen.F_MTCImport!txtUnitType.Text)
+	V.Global.sProcessText.Set(V.Screen.F_MTCImport!mltProcess_Text.Text)
+	
+	'Generate Log file for later use
+	F.Intrinsic.String.Build("{0}\MTCImport.txt",V.Caller.FilesDir,V.Global.sLogFilePath)
+	'F.Intrinsic.File.String2File(V.Global.sLogFilePath,"--------------Beginning of program--------------")
+		
+	'Check that values are filled in for Unit Type and Process Text. If there's no information upload can't continue
+	F.Intrinsic.Control.If(V.Local.sUnitType.Trim,=,"")
+		F.Intrinsic.UI.Msgbox("Please select a unit type to process.")
+		F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.ElseIf(V.Global.sProcessText.Trim,=,"")
+		F.Intrinsic.UI.Msgbox("Please enter a file for import.")
+		F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.CallSub(ProcessFile)
+	
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdOk_Click.End
+
+Program.Sub.ProcessFile.Start
+F.Intrinsic.Control.Try
+	V.Local.sUnitType.Declare(String)
+	V.Local.sUnitTypeDescription.Declare(String)
+	V.Local.sTag.Declare(String)
+	V.Local.sSQL.Declare(String)
+	V.Local.sErrMessage.Declare(String)
+	V.Local.sOutPutPath.Declare(String)
+	V.Local.sFilePath.Declare(String)
+	V.Local.sOrderNum.Declare(String)
+	V.Local.sOrderLine.Declare(String)
+	V.Local.sFileContent.Declare(String)
+	V.Local.sProductLine.Declare(String)
+	V.Local.sBOMContent.Declare(String)
+	V.Local.sBOMFileName.Declare(String)
+	V.Local.sParent.Declare(String)
+	V.Local.sRuleNumber.Declare(String)
+	V.Local.sRuleDescription.Declare(String)
+	V.Local.sResultPart.Declare(String)
+	V.Local.sResultDescription.Declare(String)
+	V.Local.sSubDesc.Declare(String)
+	V.Local.sMainDescription.Declare(String)
+	V.Local.iHandle.Declare(Long)
+	V.Local.iLineCount.Declare(Long)
+	V.Local.sPaintFlag.Declare(String)
+	V.Local.iFloatOrdinal.Declare(Long)
+	V.Local.sRPMParts.Declare(String)
+	V.Local.sRPM.Declare(String)
+	V.Local.sModelGroup.Declare(String)
+	V.Local.fQuantity.Declare(Float)
+	V.Local.sBOMType.Declare(String)
+	V.Local.sSortCode.Declare(String)
+	V.Local.sComponentID.Declare(String)
+	V.Local.bIsDistinct.Declare(Boolean)
+	V.Local.sTemp1.Declare(String)
+	V.Local.sQuantity.Declare(String)
+	V.Local.iPartCount.Declare(Long,0)
+	V.Local.bProc.Declare(Boolean)
+	V.Local.sSelRouter.Declare(String)
+	V.Local.iC.Declare(Long)
+	V.Local.iSeq.Declare(Long)
+	V.Local.sSequence.Declare(String)
+	V.Local.sDblQuote.Declare(String)
+	V.Local.sTempArr.Declare(String)
+	V.Local.iTempUBD.Declare(Long)
+	V.Local.sFiller.Declare(String)
+	V.Local.sParameters.Declare(String)
+	V.Local.sBOMSequence.Declare(String)
+	V.Local.sBOMText.Declare(String)
+	V.Local.sUser.Declare(String)
+	
+	F.Data.DataTable.Create("BomNotes",True)
+	F.Data.Datatable.AddColumn("BomNotes","Parent","String")
+	F.Data.DataTable.AddColumn("BomNotes","ResultPart","String")
+	F.Data.DataTable.AddColumn("BomNotes","SortCode","String")
+	F.Data.DataTable.AddColumn("BomNotes","ComponentID","String")
+	
+	F.Data.DataTable.Create("BomParts",True)
+	F.Data.DataTable.AddColumn("BomParts","Part","String")
+	F.Data.DataTable.AddColumn("BomParts","Source","String")
+	
+	F.Data.DataTable.Create("Rules",True)
+	F.Data.DataTable.AddColumn("Rules","RuleID","String")
+	F.Data.DataTable.AddColumn("Rules","UnitType","String")
+	F.Data.DataTable.AddColumn("Rules","RuleDescription","String")
+	F.Data.DataTable.AddColumn("Rules","ResultPart","String")
+	F.Data.DataTable.AddColumn("Rules","ResultDescription","String")
+	F.Data.DataTable.AddColumn("Rules","Quantity","Float")
+	F.Data.DataTable.AddColumn("Rules","Distinct","Boolean")
+	F.Data.DataTable.AddColumn("Rules","BOMType","String")
+	F.Data.DataTable.AddColumn("Rules","SortCode","String")
+	F.Data.DataTable.AddColumn("Rules","ComponentID","String")
+	F.Data.DataTable.AddColumn("Rules","Sequence","Long")
+	
+	'F.Intrinsic.String.Build("PartNo,Revision,Description,AltDescription1,AltDescription2,DescExtra,Quantity,IssueUM,ConsumptionConv,UM,Cost,Source,Drawing,Leadtime,Level,Location,Memo1,Memo2,Parent,Productline,Sequence,SortCode,Tag,Category{0}",V.Ambient.NewLine,V.Local.sBOMContent)
+	
+	V.Local.sRPMParts.Redim(0,1)
+	V.Local.sUnitType.Set(V.Screen.F_MTCImport!txtUnitType.Text)
+	V.Local.sTag.Set(V.Screen.F_MTCImport!txtTag.Text)
+	F.Intrinsic.String.LPad(V.Passed.000060,"0",7,V.Local.sOrderNum)
+	F.Intrinsic.String.LPad(V.Passed.000051,"0",3,V.Local.sOrderLine)
+	
+	F.Intrinsic.String.Build("SELECT Description, OutPutPath FROM MTC_HEADER WHERE UnitType = '{0}'",V.Local.sUnitType.Trim,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstOutPutPath",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstOutPutPath.EOF,<>,True)
+	
+		'If there is no value set to the programs directory
+		F.Intrinsic.Control.If(V.ODBC.con!rstOutPutPath.FieldValTrim!OutPutPath,=,"")
+			V.Local.sOutPutPath.Set(V.Ambient.ScriptPath)
+		F.Intrinsic.Control.Else
+			V.Local.sOutPutPath.Set(V.ODBC.con!rstOutPutPath.FieldValTrim!OutPutPath)
+		F.Intrinsic.Control.EndIf
+		
+		F.Intrinsic.Control.If(V.Local.sOutPutPath.Right1,<>,"\")
+			F.Intrinsic.String.Build("{0}\",V.Local.sOutPutPath,V.Local.sOutPutPath)
+		F.Intrinsic.Control.EndIf
+		
+		V.Local.sUnitTypeDescription.Set(V.ODBC.con!rstOutPutPath.FieldValTrim!Description)
+		
+		'If Tag is blank set it to TAG
+		F.Intrinsic.Control.If(V.Local.sTag.Trim,=,"")
+			V.Local.sTag.Set("TAG")
+		F.Intrinsic.Control.EndIf
+
+		'Create file
+		F.Intrinsic.String.Build("{0}{1}{2}.txt",V.Local.sOutPutPath,V.Local.sOrderNum,V.Local.sOrderLine,V.Local.sFilePath)
+		F.Intrinsic.String.Build("{0}{1}{2}{3}{2}{4}",V.Local.sOrderNum,V.Local.sOrderLine,V.Ambient.NewLine,V.Local.sTag,V.Global.sProcessText,V.Local.sFileContent)
+		F.Intrinsic.File.String2File(V.Local.sFilePath,V.Local.sFileContent)		
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("Unable to get Output Path for UnitType: {0}",V.Local.sUnitType.Trim,V.Local.sErrMessage)
+		F.Intrinsic.UI.Msgbox(V.Local.sErrMessage)
+		F.Intrinsic.Control.End
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstOutPutPath.Close
+	
+	'split the process text on Newline
+	F.Intrinsic.String.Split(V.Global.sProcessText,V.Ambient.NewLine,V.Global.sProcessText)
+	'Get the number of lines that are in the file. Should always be 2 + Ubound of ProcessText
+	F.Intrinsic.Math.Add(V.Global.sProcessText.UBound,2,V.Local.iLineCount)
+	
+	'Get the product line from MTC_PL custom table
+	F.Intrinsic.String.Build("SELECT DISTINCT PL FROM MTC_PL WHERE UnitType = '{0}' AND VALUE = '{1}'",V.Local.sUnitType.Trim,V.Global.sProcessText(0).Left3,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstPL",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstPL.EOF,<>,True)
+		V.Local.sProductLine.Set(V.ODBC.con!rstPL.FieldValTrim!PL)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("Unable to retrieve PL information for unit type: {0}",V.Local.sUnitType.Trim,V.Local.sErrMessage)
+		F.Intrinsic.UI.Msgbox(V.Local.sErrMessage)
+		F.Intrinsic.Control.CallSub(Unload)
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstPL.Close
+	
+	'Build BOM File
+	F.Intrinsic.String.Build("LB{0}{1}",V.Caller.Terminal,V.Caller.CompanyCode,V.Local.sBOMFileName)
+	F.Intrinsic.String.Build("BOM File: {0}\{1}",V.Caller.FilesDir,V.Local.sBOMFileName,V.Global.sLogFileText)
+	'Log BOM FileName
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	'Get information for BOM Parent line
+	F.Intrinsic.String.Build("{0}{1}",V.Local.sOrderNum,V.Local.sOrderLine,V.Local.sParent)
+	
+	'Open Connection to Rule Headers to get rules for the Unit Type
+	F.Intrinsic.String.Build("SELECT RuleNumber, ResultPart, SORTCODE, COMPONENTID FROM MTC_RULE_HEADERS WHERE UnitType = '{0}' AND ModelGroup = 'Description' ORDER BY RuleNumber",V.Local.sUnitType.Trim,V.Local.sSQL)
+
+	F.Intrinsic.String.Build("Opening RecordSet rstRules with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+
+	F.ODBC.Connection!con.OpenLocalRecordsetRO("rstRules",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstRules.EOF,<>,True)
+		F.Intrinsic.Control.DoUntil(V.ODBC.con!rstRules.EOF,=,True)
+			V.Local.sRuleNumber.Set(V.ODBC.con!rstRules.FieldVal!RuleNumber)
+			V.Local.sRuleDescription.Set("")
+			V.Local.sResultPart.Set(V.ODBC.con!rstRules.FieldVal!ResultPart)
+			V.Local.sResultDescription.Set("")
+			V.Local.sComponentID.Set(V.ODBC.con!rstRules.FieldValTrim!Componentid)
+			V.Local.sSortCode.Set(V.ODBC.con!rstRules.FieldValTrim!SORTCODE)
+			
+			'Log rule number
+			F.Intrinsic.String.Build("Checking Rule for {0}",V.Local.sRuleNumber,V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			F.Intrinsic.Control.CallSub(ReadRules,"sRuleNumber",V.Local.sRuleNumber,"sUnitType",V.Local.sUnitType.Trim,"sRuleDescription",V.Local.sRuleDescription,"sSubDesc",V.Local.sSubDesc)
+			
+			F.Intrinsic.Control.If(V.Args.ReadRules,=,True)
+				F.Intrinsic.String.Build("{0}{1}",V.Local.sMainDescription,V.Local.sResultPart.RTrim,V.Local.sMainDescription)
+			F.Intrinsic.Control.EndIf
+			
+			'Logging
+			F.Intrinsic.String.Build("Move Next in Recordset rstRules for Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			F.ODBC.con!rstRules.MoveNext
+		F.Intrinsic.Control.Loop
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("Unable to retrieve rules for unit type description: {0}",V.Local.sUnitType.Trim,V.Local.sErrMessage)
+		F.Intrinsic.UI.Msgbox(V.Local.sErrMessage)
+		F.Intrinsic.Control.CallSub(Unload)
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstRules.Close
+	
+	F.Intrinsic.Control.If(V.Local.sMainDescription.Trim,<>,"")
+		V.Local.sUnitTypeDescription.Set(V.Local.sMainDescription.Left30)
+	F.Intrinsic.Control.EndIf
+	
+	V.Local.sUnitTypeDescription.Set(V.Local.sUnitTypeDescription.UCase)
+	
+	'Logging
+	F.Intrinsic.String.Build("Testing Part {0} with Description {1}",V.Local.sParent,V.Local.sUnitTypeDescription,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	
+	F.Intrinsic.Control.CallSub(TestPart,"sPart",V.Local.sParent,"sDescription",V.Local.sUnitTypeDescription,"sProductLine",V.Local.sProductLine)
+	
+	'Add Parent Record to the BOM Upload File Contents
+	F.Intrinsic.String.RPad(V.Local.sParent," ",20,V.Local.sParent)
+	F.Intrinsic.String.RPad(V.Local.sUnitTypeDescription," ",30,V.Local.sUnitTypeDescription)
+	
+	F.Intrinsic.String.Build("File Contents So Far:{0}{1}",V.Ambient.NewLine,V.Local.sBOMContent,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	
+	V.Local.sMainDescription.Set("")
+	
+	F.Intrinsic.String.Build("SELECT RuleNumber, ResultPart FROM MTC_RULE_HEADERS WHERE UnitType = '{0}' AND ModelGroup = 'Paint' ORDER BY RuleNumber",V.Local.sUnitType.Trim,V.Local.sSQL)
+	
+	F.Intrinsic.String.Build("Opening RecordSet rstPaint with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstPaint",V.Local.sSQL)
+	
+	F.Intrinsic.Control.DoUntil(V.ODBC.con!rstPaint.EOF,=,True)
+		V.Local.sRuleNumber.Set(V.ODBC.con!rstPaint.FieldVal!RuleNumber)
+		V.Local.sRuleDescription.Set("")
+		V.Local.sResultPart.Set(V.ODBC.con!rstPaint.FieldValTrim!ResultPart)
+		V.Local.sResultDescription.Set("")
+		
+		F.Intrinsic.String.Build("Checking Rule for {0}",V.Local.sRuleNumber,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)	
+		
+		F.Intrinsic.Control.CallSub(ReadRules,"sRuleNumber",V.Local.sRuleNumber,"sUnitType",V.Local.sUnitType.Trim,"sRuleDescription",V.Local.sRuleDescription,"sSubDesc",V.Local.sSubDesc)
+		
+		F.Intrinsic.Control.If(V.Args.ReadRules,=,True)
+			V.Local.sPaintFlag.Set(V.Local.sResultPart)
+		F.Intrinsic.Control.EndIf
+		
+		F.Intrinsic.String.Build("Move Next in Recordset rstPaint for Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		
+		F.ODBC.con!rstPaint.MoveNext
+	F.Intrinsic.Control.Loop
+	
+	F.ODBC.con!rstPaint.Close
+	
+	F.Intrinsic.String.Build("Updating Inventory_Mstr Where Part = {0}",V.Local.sParent,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+	F.Intrinsic.String.Build("UPDATE INVENTORY_MSTR SET CODE_EXCEPTION = '{0}', CODE_TOTAL = 'Y' WHERE PART = '{1}'",V.Local.sPaintFlag,V.Local.sParent,V.Local.sSQL)
+	F.ODBC.Connection!con.Execute(V.Local.sSQL)
+	
+	V.Global.iFloat.Redim(-1,-1)
+	
+	'Loading iFloat Positions, From what I can tell there's only ever one record for this.... but it's coded to handle multiple so that's why it's set up the way it is
+	F.Intrinsic.String.Build("SELECT LineNumber, FloatPostion FROM MTC_LINE_INFO WHERE UnitType = '{0}' ORDER BY LineNumber",V.Local.sUnitType,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstFloatPos",V.Local.sSQL)
+	
+	F.Intrinsic.Control.DoUntil(V.ODBC.con!rstFloatPos.EOF,=,True)
+		F.Intrinsic.Math.Sub(V.ODBC.con!rstFloatPos.FieldValLong!LineNumber,1,V.Local.iFloatOrdinal)
+		
+		F.Intrinsic.Control.If(V.Global.iFloat.UBound,=,-1)
+			V.Global.iFloat.Redim(0,V.Local.iFloatOrdinal)
+		F.Intrinsic.Control.ElseIf(V.Global.iFloat.UBound,<,V.Local.iFloatOrdinal)
+			V.Global.iFloat.RedimPreserve(0,V.Local.iFloatOrdinal)
+		F.Intrinsic.Control.EndIf
+		
+		V.Global.iFloat(V.Local.iFloatOrdinal).Set(V.ODBC.con!rstFloatPos.FieldValLong!FloatPostion)
+
+		F.Intrinsic.String.Build("Move Next in Recordset rstFloatPos for Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+
+		F.ODBC.con!rstFloatPos.MoveNext
+	F.Intrinsic.Control.Loop
+	
+	F.ODBC.con!rstFloatPos.Close
+	
+	F.Intrinsic.Control.If(V.Local.sUnitType,=,"DFL")
+		F.Intrinsic.String.Build("Calling ProcessRPM For UnitType {0}",V.Local.sUnitType,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		
+		F.Intrinsic.Control.CallSub(ProcessRPM)
+		
+		F.Intrinsic.Control.If(V.Args.bIsValid,=,True)
+			F.Intrinsic.String.Build("UnitType {0} is Valid",V.Local.sUnitType,V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			V.Local.sRPMParts(0).Set(V.Args.sPart1)
+			V.Local.sRPMParts(1).Set(V.Args.sPart2)
+			V.Local.sRPM.Set(V.Args.sRPM)
+			
+			F.Intrinsic.Control.If(V.Local.sRPMParts(0),<>,"")
+				F.Intrinsic.String.RPad(V.Local.sRPMParts(0)," ",20,V.Local.sRPMParts(0))
+				F.Intrinsic.String.Build("{0}{5}{1}{5},{5}{2}{5},{5}1{5},,,,,,,,{5}{3}{5},,,{5}EA{5},,,,,,,,,,,{5} {5}{4}",V.Local.sBOMContent,V.Local.sParent.Trim,V.Local.sRPMParts(0).Trim,V.Local.sUnitTypeDescription,V.Ambient.NewLine,V.Ambient.DblQuote,V.Local.sBOMContent)
+				F.Intrinsic.String.Build("File Contents So Far:{0}{1}",V.Ambient.NewLine,V.Local.sBOMContent,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.Control.If(V.Local.sRPMParts(1),<>,"")
+				F.Intrinsic.String.RPad(V.Local.sRPMParts(1)," ",20,V.Local.sRPMParts(1))
+				F.Intrinsic.String.Build("{0}{5}{1}{5},{5}{2}{5},{5}1{5},,,,,,,,{5}{3}{5},,,{5}EA{5},,,,,,,,,,,{5} {5}{4}",V.Local.sBOMContent,V.Local.sParent.Trim,V.Local.sRPMParts(1).Trim,V.Local.sUnitTypeDescription,V.Ambient.NewLine,V.Ambient.DblQuote,V.Local.sBOMContent)			
+				
+				F.Intrinsic.String.Build("File Contents So Far:{0}{1}",V.Ambient.NewLine,V.Local.sBOMContent,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.String.Build("Updating Inventory_Mst2 for Part = {0}",V.Local.sParent,V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			F.Intrinsic.String.Build("UPDATE INVENTORY_MST2 SET DESCRIPTION_2 = '{0}' WHERE PART = '{1}'",V.Local.sRPM,V.Local.sParent.Trim,V.Local.sSQL)
+			F.ODBC.Connection!con.Execute(V.Local.sSQL)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.ElseIf(V.Local.sUnitType,=,"DFC","OR",V.Local.sUnitType,=,"DFM")
+		F.Intrinsic.String.Build("ProcessRPMDFCM for UnitType = {0}",V.Local.sUnitType,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		
+		F.Intrinsic.Control.CallSub(ProcessRPMDFCM,"sUnitType",V.Local.sUnitType)
+		
+		F.Intrinsic.Control.If(V.Args.bIsValid)
+			F.Intrinsic.String.Build("UnitType {0} is Valid",V.Local.sUnitType,V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			V.Local.sRPMParts(0).Set(V.Args.sPart1)
+			V.Local.sRPMParts(1).Set(V.Args.sPart2)
+			V.Local.sRPM.Set(V.Args.sRPM)
+			
+			F.Intrinsic.Control.If(V.Local.sRPMParts(0),<>,"")
+				F.Intrinsic.String.RPad(V.Local.sRPMParts(0)," ",20,V.Local.sRPMParts(0))
+				F.Intrinsic.String.Build("{0}{5}{1}{5},{5}{2}{5},{5}1{5},,,,,,,,{5}{3}{5},,,{5}EA{5},,,,,,,,,,,{5} {5}{4}",V.Local.sBOMContent,V.Local.sParent.Trim,V.Local.sRPMParts(0).Trim,V.Local.sUnitTypeDescription,V.Ambient.NewLine,V.Ambient.DblQuote,V.Local.sBOMContent)
+				F.Intrinsic.String.Build("File Contents So Far:{0}{1}",V.Ambient.NewLine,V.Local.sBOMContent,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.Control.If(V.Local.sRPMParts(1),<>,"")
+				F.Intrinsic.String.RPad(V.Local.sRPMParts(1)," ",20,V.Local.sRPMParts(1))
+				F.Intrinsic.String.Build("{0}{5}{1}{5},{5}{2}{5},{5}1{5},,,,,,,,{5}{3}{5},,,{5}EA{5},,,,,,,,,,,{5} {5}{4}",V.Local.sBOMContent,V.Local.sParent.Trim,V.Local.sRPMParts(1).Trim,V.Local.sUnitTypeDescription,V.Ambient.NewLine,V.Ambient.DblQuote,V.Local.sBOMContent)			
+				F.Intrinsic.String.Build("File Contents So Far:{0}{1}",V.Ambient.NewLine,V.Local.sBOMContent,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.String.Build("Updating Inventory_Mst2 Where Part = '{0}",V.Local.sParent,V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			F.Intrinsic.String.Build("UPDATE INVENTORY_MST2 SET DESCRIPTION_2 = '{0}' WHERE PART = '{1}'",V.Local.sRPM,V.Local.sParent,V.Local.sSQL)
+			'DL2 logging
+			F.ODBC.Connection!con.Execute(V.Local.sSQL)			
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.ElseIf(V.Local.sUnitType,=,"IFL")
+		F.Intrinsic.String.Build("ProcessRPMIFL for UnitType {0}",V.Local.sUnitType,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		
+		F.Intrinsic.Control.CallSub(ProcessRPMIFL)
+		
+		F.Intrinsic.Control.If(V.Args.IsValid)
+			F.Intrinsic.String.Build("UnitType {0} is Valid",V.Local.sUnitType,V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			V.Local.sRPMParts(0).Set(V.Args.sPart1)
+			V.Local.sRPMParts(1).Set(V.Args.sPart2)
+			
+			F.Intrinsic.Control.If(V.Local.sRPMParts(0),<>,"")
+				F.Intrinsic.String.RPad(V.Local.sRPMParts(0)," ",20,V.Local.sRPMParts(0))
+				F.Intrinsic.String.Build("{0}{5}{1}{5},{5}{2}{5},{5}1{5},,,,,,,,{5}{3}{5},,,{5}EA{5},,,,,,,,,,,{5} {5}{4}",V.Local.sBOMContent,V.Local.sParent.Trim,V.Local.sRPMParts(0).Trim,V.Local.sUnitTypeDescription,V.Ambient.NewLine,V.Ambient.DblQuote,V.Local.sBOMContent)
+				F.Intrinsic.String.Build("File Contents So Far:{0}{1}",V.Ambient.NewLine,V.Local.sBOMContent,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.Control.If(V.Local.sRPMParts(1),<>,"")
+				F.Intrinsic.String.RPad(V.Local.sRPMParts(1)," ",20,V.Local.sRPMParts(1))
+				F.Intrinsic.String.Build("{0}{5}{1}{5},{5}{2}{5},{5}1{5},,,,,,,,{5}{3}{5},,,{5}EA{5},,,,,,,,,,,{5} {5}{4}",V.Local.sBOMContent,V.Local.sParent.Trim,V.Local.sRPMParts(1).Trim,V.Local.sUnitTypeDescription,V.Ambient.NewLine,V.Ambient.DblQuote,V.Local.sBOMContent)
+				F.Intrinsic.String.Build("File Contents So Far:{0}{1}",V.Ambient.NewLine,V.Local.sBOMContent,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.String.Build("Updating Inventory_Mst2 Where Part = {0}",V.Local.sParent,V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			F.Intrinsic.String.Build("UPDATE INVENTORY_MST2 SET DESCRIPTION_2 = '{0}' WHERE PART = '{1}'",V.Local.sRPM,V.Local.sParent,V.Local.sSQL)
+			'DL2 Logging
+			F.ODBC.Connection!con.Execute(V.Local.sSQL)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.String.Build("SELECT RuleNumber, Description, ResultPart, ResultDescription, Quantity, IsDistinct, BOM_TYPE, ModelGroup, SortCode, ComponentID FROM MTC_RULE_HEADERS WHERE UnitType = '{0}' ORDER BY RuleNumber",V.Local.sUnitType,V.Local.sSQL)
+
+	F.Intrinsic.String.Build("Opening Recordset rstRule with query {0}",V.Local.sSQL,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstRule",V.Local.sSQL)
+	
+	F.Intrinsic.Control.DoUntil(V.ODBC.con!rstRule.EOF,=,True)
+		V.Local.sModelGroup.Set(V.ODBC.con!rstRule.FieldValTrim!ModelGroup)
+		
+		F.Intrinsic.Control.If(V.Local.sModelGroup.uCase,<>,"DESCRIPTION","AND",V.Local.sModelGroup.UCase,<>,"VARIABLE",V.Local.sModelGroup.UCase,<>,"PAINT")
+			F.Intrinsic.Control.If(V.Local.sModelGroup.UCase,<>,"ROUTER")
+				
+				F.Intrinsic.String.Build("{0} =/= router",V.Local.sModelGroup,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+				
+				V.Local.sRuleNumber.Set(V.ODBC.con!rstRule.FieldValTrim!RuleNumber)
+				V.Local.sRuleDescription.Set(V.ODBC.con!rstRule.FieldValTrim!Description)
+				V.Local.sResultPart.Set(V.ODBC.con!rstRule.FieldValTrim!ResultPart)
+				V.Local.sResultDescription.Set(V.ODBC.con!rstRule.FieldValTrim!ResultDescription)
+				V.Local.fQuantity.Set(V.ODBC.con!rstRule.FieldValFloat!Quantity)
+				V.Local.sBOMType.Set(V.ODBC.con!rstRule.FieldValTrim!BOM_TYPE)
+				V.Local.sSortCode.Set(V.ODBC.con!rstRule.FieldValTrim!SortCode)
+				V.Local.sComponentID.Set(V.ODBC.con!rstRule.FieldValTrim!ComponentID)
+				
+				F.Intrinsic.Control.If(V.ODBC.con!rstRule.FieldValTrim!IsDistinct,=,"Y")
+					V.Local.bIsDistinct.Set(True)
+				F.Intrinsic.Control.Else
+					V.Local.bIsDistinct.Set(False)
+				F.Intrinsic.Control.EndIf
+				
+				V.Local.sSubDesc.Set("")
+				
+				F.Intrinsic.String.Build("Check Rule for Rule Number {0}",V.Local.sRuleNumber,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+				
+				F.Intrinsic.Control.CallSub(ReadRules,"sRuleNumber",V.Local.sRuleNumber,"sUnitType",V.Local.sUnitType,"sRuleDescription",V.Local.sRuleDescription,"sSubDesc",V.Local.sSubDesc)
+								
+				F.Intrinsic.Control.If(V.Args.ReadRules,=,True)
+					F.Intrinsic.String.Build("Rule {0} Passed",V.Local.sRuleNumber,V.Global.sLogFileText)
+					'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+					
+					F.Intrinsic.String.Build("SELECT MAX(RIGHT(PART,3)) AS PARTNO FROM INVENTORY_MSTR WHERE PART LIKE '{0}%'",V.Local.sResultPart.RTrim,V.Local.sSQL)
+					
+					F.Intrinsic.String.Build("Opening Recordset rstPart with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+					'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+					
+					F.ODBC.Connection!con.OpenLocalRecordSetRO("rstPart",V.Local.sSQL)
+					
+					F.Intrinsic.Control.If(V.ODBC.con!rstPart.EOF,<>,True,"AND",V.ODBC.con!rstPart.FieldValIsNull!PARTNO,<>,True)
+						F.Intrinsic.Control.If(V.ODBC.con!rstPart.FieldValTrim!PARTNO,<>,"")							
+							F.Intrinsic.String.Build("{0}{1}",V.Local.sResultPart.Left17,V.ODBC.con!rstPart.FieldVal!PARTNO,V.Local.sTemp1)					
+
+							F.Intrinsic.String.Build("Result Part {0}",V.Local.sTemp1,V.Global.sLogFileText)
+							'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+							F.Intrinsic.String.RPad(V.Local.sResultPart," ",20,V.Local.sResultPart)
+							
+							F.Intrinsic.Control.If(V.Local.sTemp1, <>, V.Local.sResultPart)
+								V.Local.sResultPart.Set(V.Local.sTemp1.Left20)
+							F.Intrinsic.Control.EndIf
+							
+						F.Intrinsic.Control.EndIf
+					F.Intrinsic.Control.EndIf
+					
+					F.ODBC.con!rstPart.Close
+					
+					F.Data.DataTable.AddRow("BomNotes","Parent",V.Local.sParent,"ResultPart",V.Local.sResultPart,"ComponentID",V.Local.sComponentID,"SortCode",V.Local.sSortCode)
+					F.Data.DataTable.AcceptChanges("BomNotes")
+					
+					'Format the data before adding to file
+					F.Intrinsic.String.RPad(V.Local.sParent," ",20,V.Local.sParent)
+					F.Intrinsic.String.RPad(V.Local.sResultPart," ",20,V.Local.sResultPart)
+					F.Intrinsic.String.RPad(V.Local.fQuantity.String," ",16,V.Local.sQuantity)
+					F.Intrinsic.String.RPad(V.Local.sResultDescription," ",30,V.Local.sResultDescription)				
+					F.Intrinsic.String.Build("File Contents So Far:{0}{1}",V.Ambient.NewLine,V.Local.sBOMContent,V.Global.sLogFileText)
+					'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+					
+					F.Intrinsic.String.Build("SELECT CODE_SOURCE FROM INVENTORY_MST2 WHERE PART = '{0}'",V.Local.sResultPart,V.Local.sSQL)
+					
+					F.Intrinsic.String.Build("Opening RecordSet rstPart with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+					'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+					
+					F.ODBC.Connection!con.OpenLocalRecordsetRO("rstPart",V.Local.sSQL)
+					
+					F.Intrinsic.Control.If(V.ODBC.con!rstPart.EOF,<>,True)
+						F.Data.Datatable.AddRow("BomParts","Part",V.Local.sResultPart,"Source",V.ODBC.con!rstPart.FieldValTrim!CODE_SOURCE)							
+					F.Intrinsic.Control.EndIf
+					
+					F.Data.DataTable.AcceptChanges("BomParts")
+					
+					F.ODBC.con!rstPart.Close
+					
+					F.Intrinsic.Control.If(V.Local.sBOMType.Trim,=,"","OR",V.Local.sBOMType.IsNumeric,=,True)
+						V.Local.sBOMType.Set("N")
+					F.Intrinsic.Control.EndIf
+					
+					F.Intrinsic.Control.If(V.Local.bIsDistinct,=,False)
+						F.Intrinsic.String.RPad(V.Local.sBOMType," ",1,V.Local.sBomType)
+						F.Intrinsic.String.Build("{0}{8}{1}{8},{8}{2}{8},{8}{3}{8},{8}{4}{8},,,,,,,{8}{5}{8},,,{8}EA{8},,,,,,,,,,,{8}{6}{8}{7}",V.Local.sBOMContent,V.Local.sParent.Trim,V.Local.sResultPart.Trim,V.Local.sQuantity.Trim,V.Local.sResultDescription.Trim,V.Local.sUnitTypeDescription,V.Local.sBOMType.Trim,V.Ambient.NewLine,V.Ambient.DblQuote,V.Local.sBOMContent)
+					F.Intrinsic.Control.Else
+						F.Data.DataTable.AddRow("Rules","RuleID",V.Local.sRuleNumber,"UnitType",V.Local.sUnitType,"RuleDescription",V.Local.sRuleDescription,"ResultPart",V.Local.sResultPart,"ResultDescription",V.Local.sResultDescription,"Quantity",V.Local.fQuantity,"Distinct",V.Local.bIsDistinct,"BOMType",V.Local.sBOMType,"SortCode",V.Local.sSortCode,"ComponentID",V.Local.sComponentID)
+						F.Intrinsic.Math.Add(V.Local.iPartCount,1,V.Local.iPartCount)
+						F.Data.DataTable.AcceptChanges("Rules")
+					F.Intrinsic.Control.EndIf
+										
+					F.Intrinsic.Control.If(V.Local.sSortCode.Trim,<>,"","OR",V.Local.sSubDesc.Trim,<>,"")
+						V.Local.bProc.Set(True)
+					F.Intrinsic.Control.EndIf
+					
+					F.Intrinsic.Control.If(V.Local.bProc)
+						V.Local.sSubDesc.Set(V.Local.sSubDesc.Left30)
+						
+						F.Intrinsic.String.RPad(V.Local.sParent," ",20,V.Local.sParent)
+						F.Intrinsic.String.RPad(V.Local.sSubDesc," ",30,V.Local.sSubDesc)
+						F.Intrinsic.String.Build("{0}{5}{1}{5},,{5}1{5},{5}{2}{5},,,,,,,{5}{3}{5},,,{5}EA{5},,,,,,,,,,,{5}R{5}{4}",V.Local.sBOMContent,V.Local.sParent.Trim,V.Local.sSubDesc.Trim,V.Local.sUnitTypeDescription,V.Ambient.NewLine,V.Ambient.DblQuote,V.Local.sBOMContent)						
+						F.Intrinsic.String.Build("File Contents So Far:{0}{1}",V.Ambient.NewLine,V.Local.sBOMContent,V.Global.sLogFileText)
+						'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+					F.Intrinsic.Control.EndIf					
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.Else
+				V.Local.sRuleNumber.Set(V.ODBC.con!rstRule.FieldValTrim!RuleNumber)
+				V.Local.sRuleDescription.Set(V.ODBC.con!rstRule.FieldValTrim!Description)
+				V.Local.sResultPart.Set(V.ODBC.con!rstRule.FieldValTrim!ResultPart)
+				V.Local.sResultDescription.Set(V.ODBC.con!rstRule.FieldValTrim!ResultDescription)
+				V.Local.sQuantity.Set(V.ODBC.con!rstRule.FieldValTrim!Quantity)
+				V.Local.sBOMType.Set(V.ODBC.con!rstRule.FieldValTrim!BOM_TYPE)
+				
+				F.Intrinsic.Control.If(V.ODBC.con!rstRule.FieldValTrim!IsDistinct,=,"Y")
+					V.Local.bIsDistinct.Set(True)
+				F.Intrinsic.Control.Else
+					V.Local.bIsDistinct.Set(False)
+				F.Intrinsic.Control.EndIf
+				
+				V.Local.sSubDesc.Set("")
+				
+				F.Intrinsic.String.Build("Check Rule for Rule Number {0}",V.Local.sRuleNumber,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+				
+				F.Intrinsic.Control.CallSub(ReadRules,"sRuleNumber",V.Local.sRuleNumber,"sUnitType",V.Local.sUnitType,"sRuleDescription",V.Local.sRuleDescription,"sSubDesc",V.Local.sSubDesc)
+				
+				F.Intrinsic.Control.If(V.Args.ReadRules,=,True)
+					V.Local.sSelRouter.Set(V.Local.sResultPart)
+				F.Intrinsic.Control.EndIf
+				
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.EndIf
+
+		V.Global.sLogFileText.Set("Move Next for RecordSet rstRule")
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		
+		F.ODBC.con!rstRule.MoveNext
+	F.Intrinsic.Control.Loop
+	
+	F.ODBC.con!rstRule.Close
+	
+	'Need to get rid of that extra line. Really just happening because of how we've had to build the file and keep them builds from being too cluttered.
+	F.Intrinsic.String.Split(V.Local.sBOMContent,V.Ambient.NewLine,V.Local.sTempArr)
+	F.Intrinsic.Math.Sub(V.Local.sTempArr.UBound,1,V.Local.iTempUBD)
+	V.Local.sTempArr.RedimPreserve(0,V.Local.iTempUBD)
+	F.Intrinsic.String.Join(V.Local.sTempArr,V.Ambient.NewLine,V.Local.sBOMCOntent)
+	
+	'WE'VE FINALLY MADE IT. We can see if the BOM Content file has anything and if so create the file and then create a backup as well. Apparently we just assumed we always had something.....
+	F.Intrinsic.String.Build("{0}\{1}.bkp",V.Caller.FilesDir,V.Local.sBOMFileName,V.Local.sFilePath)
+	F.Intrinsic.File.String2File(V.Local.sFilePath,V.Local.sBOMContent)
+	
+	F.Intrinsic.String.Build("{0}\{1}",V.Caller.FilesDir,V.Local.sBOMFileName,V.Local.sFilePath)
+	F.Intrinsic.File.String2File(V.Local.sFilePath,V.Local.sBOMContent)
+	
+	F.Intrinsic.Control.CallSub(CallBOMUpload,"sFilePath",V.Local.sFilePath)
+	
+	'Loop through our parts if we have any
+	F.Intrinsic.Control.For(V.Local.iC,0,V.DataTable.BomParts.RowCount--,1)
+		F.Intrinsic.Control.If(V.DataTable.BomParts(V.Local.iC).Part!FieldValTrim,<>,"")
+			F.Intrinsic.String.Build("UPDATE BOM_MSTR SET SOURCE = '{0}' WHERE PART = '{1}' AND PARENT = '{2}'",V.DataTable.BomParts(V.Local.iC).Source!FieldValTrim,V.DataTable.BomParts(V.Local.iC).Part!FieldValTrim,V.Local.sParent,V.Local.sSQL)
+			F.ODBC.Connection!con.Execute(V.Local.sSQL)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Next(V.Local.iC)
+	
+	F.Intrinsic.String.Build("SELECT DESCRIPTION FROM BOM_ENG WHERE PART = '{0}'",V.Local.sParent.Trim,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordSetRW("rstDescription",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstDescription.EOF,<>,True)
+		F.ODBC.con!rstDescription.Set!DESCRIPTION(V.Local.sUnitTypeDescription.Left30)
+		F.ODBC.con!rstDescription.Update
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstDescription.Close
+	
+	'loop through BOMNotes to update
+	F.Intrinsic.Control.For(V.Local.iC,0,V.DataTable.BomNotes.RowCount--,1)
+		F.Intrinsic.Control.If(V.DataTable.BomNotes(V.Local.iC).SortCode!FieldValTrim,<>,"")
+			F.Intrinsic.String.Build("SELECT SEQUENCE_BOM FROM BOM_MSTR WHERE PARENT = '{0}' AND PART = '{1}'",V.DataTable.BomNotes(V.Local.iC).Parent!FieldValTrim,V.DataTable.BomNotes(V.Local.iC).ResultPart!FieldValTrim,V.Local.sSQL)
+			F.ODBC.Connection!con.ExecuteAndReturn(V.Local.sSQL,V.Local.sBOMSequence)
+			
+			F.Intrinsic.Control.If(V.Local.sBOMSequence.Trim,<>,"")
+				F.Intrinsic.String.Build("SELECT * FROM BOM_NOTES WHERE PARENT = '{0}' AND PARENT_SEQ = '{1}'",V.DataTable.BomNotes(V.Local.iC).Parent!FieldValTrim,V.Local.sBOMSequence,V.Local.sSQL)
+				F.ODBC.Connection!con.OpenLocalRecordsetRW("rstBOMNotes",V.Local.sSQL)
+				
+				F.Intrinsic.Control.If(V.ODBC.con!rstBOMNotes.EOF,=,True)
+					F.ODBC.con!rstBOMNotes.AddNew
+					F.ODBC.con!rstBOMNotes.Set!PARENT(V.DataTable.BomNotes(V.Local.iC).Parent!FieldValTrim)
+					F.ODBC.con!rstBOMNotes.Set!PARENT_SEQ(V.Local.sBOMSequence.Trim)
+					F.ODBC.con!rstBOMNotes.Set!PARENT_INS("00")
+				F.Intrinsic.Control.EndIf
+								
+				F.Intrinsic.String.Build("{0}{1}{2}",V.DataTable.BomNotes(V.Local.iC).SortCode!FieldValTrim,V.Ambient.NewLine,V.DataTable.BomNotes(V.Local.iC).ComponentID!FieldValTrim,V.Local.sBOMText)
+				F.ODBC.con!rstBOMNotes.Set!TEXT(V.Local.sBOMText)
+				F.ODBC.con!rstBOMNotes.Update
+				
+				F.ODBC.con!rstBOMNotes.Close
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Next(V.Local.iC)
+	
+	F.Intrinsic.Control.For(V.Local.iC,0,1,1)
+		F.Intrinsic.Control.If(V.Local.sRPMParts(V.Local.iC).Trim,<>,"")
+			F.Intrinsic.String.Build("UPDATE BOM_MSTR SET SOURCE = 'P' WHERE PART = '{0}' AND PARENT = '{1}'",V.Local.sRPMParts(V.Local.iC),V.Local.sParent,V.Local.sSQL)
+			F.ODBC.Connection!con.Execute(V.Local.sSQL)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Next(V.Local.iC)
+	
+	'Process sales order information
+	'Build Sales Order Upload File
+	F.Intrinsic.String.Build("{0}\LOL{1}{2}",V.Caller.FilesDir,V.Caller.Terminal,V.Caller.CompanyCode,V.Local.sOutputPath)
+	'Pad Values for File Upload
+	F.Intrinsic.String.LPad(V.Local.sOrderNum,"0",7,V.Local.sOrderNum)
+	F.Intrinsic.String.RPad(V.Local.sProductLine," ",5,V.Local.sProductLine)
+	F.Intrinsic.String.RPad(V.Local.sParent," ",38,V.Local.sParent)
+	F.Intrinsic.String.RPad(V.Local.sUnitTypeDescription," ",30,V.Local.sUnitTypeDescription)
+	F.Intrinsic.String.RPad(V.Local.sTag.Left30," ",30,V.Local.sTag)
+	F.Intrinsic.String.RPad(V.Local.sFiller," ",120,V.Local.sFiller)
+	'Build Sales Order Upload File Content
+	F.Intrinsic.String.Build("O       {0}{1}  {2}{3}{4}",V.Local.sOrderNum,V.Local.sParent,V.Local.sProductLine,V.Local.sUnitTypeDescription,V.Local.sOrderLine,V.Local.sFileContent)
+	F.Intrinsic.String.Build("{0} 000000001000000000000000000000000000000{1}{2}EA",V.Local.sFileContent,V.Local.sTag,V.Local.sFiller,V.Local.sFileContent)
+	'Call Upload
+	F.Intrinsic.File.String2File(V.Local.sOutPutPath,V.Local.sFileContent)
+	F.Intrinsic.String.RPad(V.Caller.User," ",8,V.Local.sUser)
+	F.Intrinsic.String.Build("{0}{1}{2}",V.Caller.CompanyCode,V.Local.sUser,V.Local.sOutPutPath,V.Local.sParameters)
+	
+	F.Intrinsic.Task.LaunchGSSSync("ORDADCMD","-c",V.Local.sParameters,V.Local.iHandle)
+	
+	F.Intrinsic.Control.For(V.Local.iC,0,V.DataTable.Rules.RowCount--,1)
+		'pad new file content
+		F.Intrinsic.String.RPad(V.DataTable.Rules(V.Local.iC).ResultPart!FieldValTrim," ",38,V.Local.sResultPart)
+		F.Intrinsic.String.RPad(V.DataTable.Rules(V.Local.iC).ResultDescription!FieldValTrim," ",30,V.Local.sResultDescription)
+		F.Intrinsic.String.LPad(V.DataTable.Rules(V.Local.iC).Quantity.FieldValTrim,"0",9,V.Local.sQuantity)
+		F.Intrinsic.String.RPad(V.Local.sFiller," ",150,V.Local.sFiller)
+		F.Intrinsic.String.Build("O       {0}{1}  {2}{3}{4} {5}000000000000000000000000000000{6}EA",V.Local.sOrderNum,V.Local.sResultPart,V.Local.sProductLine,V.Local.sResultDescription,V.Local.sOrderLine.Left3,V.Local.sQuantity,V.Local.sFiller,V.Local.sFileContent)
+		F.Intrinsic.File.String2File(V.Local.sOutPutPath,V.Local.sFileContent)
+		
+		F.Intrinsic.Task.LaunchGSSSync("ORDADCMD","-c",V.Local.sParameters,V.Local.iHandle)
+	F.Intrinsic.Control.Next(V.Local.iC)
+	
+	'Add Lines to CONFIG_MESTEX
+	F.Intrinsic.Control.For(V.Local.iC,0,V.Local.iLineCount,1)
+		F.Intrinsic.String.Build("Select * From Config_Mestex Where Sales_Order = '{0}' and SO_Line = '{1}' and Import_Seq = '{2}'",V.Local.sOrderNum,V.Local.sOrderLine,V.Local.iC,V.Local.sSQL)
+		F.ODBC.Connection!con.OpenLocalRecordSetRW("rstConfigMest",V.Local.sSQL)
+		
+		F.Intrinsic.Control.If(V.ODBC.con!rstConfigMest.EOF,=,True)
+			F.Intrinsic.String.Build("INSERT INTO CONFIG_MESTEX (SALES_ORDER, SO_LINE, IMPORT_SEQ, VALUE, FILLER) VALUES('{0}','{1}','{2}','{3}','')",V.Local.sOrderNum,V.Local.sOrderLine,V.Local.iC,V.Global.sProcessText(V.Local.iC),V.Local.sSQL)		
+			F.ODBC.Connection!con.Execute(V.Local.sSQL)
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.con!rstConfigMest.Close
+	F.Intrinsic.Control.Next(V.Local.iC)
+	
+	'BUILD ROUTER
+	'sPart = parent, TEMP_sunittype or sSelRouter, XUPLRTR4
+	F.Intrinsic.Control.If(V.Local.sSelRouter.Trim,=,"")
+		F.Intrinsic.String.Build("TEMP_{0}",V.Local.sUnitType,V.Local.sTemp1)
+		F.Intrinsic.String.RPad(V.Local.sTemp1," ",20,V.Local.sTemp1)
+		F.Intrinsic.String.RPad(V.Local.sParent," ",20,V.Local.sParent)
+		F.Intrinsic.String.Build("{0}{1}{2}{3}{4}",V.Caller.CompanyCode,V.Caller.Terminal,V.Local.sUser,V.Local.sTemp1,V.Local.sParent,V.Local.sParameters)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.RPad(V.Local.sSelRouter," ",20,V.Local.sTemp1)
+		F.Intrinsic.String.RPad(V.Local.sParent," ",20,V.Local.sParent)
+		F.Intrinsic.String.Build("{0}{1}{2}{3}{4}",V.Caller.CompanyCode,V.Caller.Terminal,V.Local.sUser,V.Local.sTemp1,V.Local.sParent,V.Local.sParameters)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Task.LaunchGSSSync("XUPLRTR4","-c",V.Local.sParameters)
+	
+	F.Intrinsic.Control.CallSub("Unload")
+	
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessFile.End
+
+Program.Sub.ReadRules.Start
+F.Intrinsic.Control.Try
+	V.Local.sRuleNumber.Declare(String)
+	V.Local.sUnitType.Declare(String)
+	V.Local.sRuleDescription.Declare(String)
+	V.Local.sSubDesc.Declare(String)
+	V.Local.sSQL.Declare(String)
+	V.Local.iC.Declare(Long)
+	V.Local.sReadRulesName.Declare(String)
+	
+	V.Local.sRuleNumber.Set(V.Args.sRuleNumber)
+	V.Local.sUnitType.Set(V.Args.sUnitType)
+	V.Local.sRuleDescription.Set(V.Args.sRuleDescription)
+	V.Local.sSubDesc.Set(V.Args.sSubDesc)
+	
+	'Increase the call count by 1
+	F.Intrinsic.Math.Add(V.Global.iCallCount,1,V.Global.iCallCount)
+	
+	F.Intrinsic.String.Build("SELECT Seq, LineNumber, StartPosition, Length, Value, CAST(IF(IsCalc = 'Y',1,0) AS bit) AS IsCalc, FormulaNum, FormulaResult FROM MTC_RULE_LINES WHERE RuleNumber = '{0}' AND UnitType = '{1}' ORDER BY Seq",V.Local.sRuleNumber,V.Local.sUnitType,V.Local.sSQL)
+	
+	F.Intrinsic.String.Build("Creating Datatable ReadRules with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	F.Intrinsic.String.Build("ReadRules{0}",V.Global.iCallCount,V.Local.sReadRulesName)
+	F.Data.DataTable.CreateFromSQL(V.Local.sReadRulesName,"con",V.Local.sSQL,True)
+		
+	'Check to see if there are no records. If so then pass back false as there weren't any rules to go off of
+	F.Intrinsic.Control.If(V.DataTable.ReadRules[V.Global.iCallCount].RowCount,=,0)
+		F.Intrinsic.Variable.AddRV("ReadRules",False)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("ReadRules Rowcount = {0}",V.DataTable.ReadRules[V.Global.iCallCount].RowCount,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		
+		'If there are rules then we need to check each one depending on if it's a calculation or not.
+		F.Intrinsic.Control.For(V.Local.iC,0,V.DataTable.ReadRules[V.Global.iCallCount].RowCount--,1)
+			F.Intrinsic.Control.If(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iC).IsCalc!FieldVal,=,False)
+				F.Intrinsic.String.Build("Calling ProcessSeq For {0}",V.Local.iC,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+				
+				F.Intrinsic.Control.CallSub(ProcessSeq,"iOrdinal",V.Local.iC)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Build("Calling ProcessCalc For {0}",V.Local.iC,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+				F.Intrinsic.Control.CallSub(ProcessCalc,"iOrdinal",V.Local.iC,"sUnitType",V.Local.sUnitType,"sRuleDescription",V.Local.sRuleDescription,"sSubDesc",V.Local.sSubDesc)
+				'In case the value has changed
+				V.Local.sSubDesc.Set(V.Args.sSubDescUpdate)
+			F.Intrinsic.Control.EndIf
+			
+			'If our functions return false then we need to set the return variable to false and exit the for loop
+			F.Intrinsic.Control.If(V.Args.bIsValid,=,False)
+				F.Intrinsic.Variable.AddRV("ReadRules",False)
+				F.Data.DataTable.Close(V.Local.sReadRulesName)
+				V.Global.sLogFileText.Set("ReadRules Failed")
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+				'Decrease call count by 1
+				F.Intrinsic.Math.Sub(V.Global.iCallCount,1,V.Global.iCallCount)
+				F.Intrinsic.Control.ExitSub
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Next(V.Local.iC)
+		
+		V.Global.sLogFileText.Set("ReadRules Passed")
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		
+		'If it gets through the Loop then we know that it passed the rule check
+		F.Intrinsic.Variable.AddRV("ReadRules",True)
+	F.Intrinsic.Control.EndIf
+	
+	F.Data.DataTable.Close(V.Local.sReadRulesName)
+	'Decrease call count by 1
+	F.Intrinsic.Math.Sub(V.Global.iCallCount,1,V.Global.iCallCount)
+	
+	
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.ReadRules.End
+
+Program.Sub.ProcessCalc.Start
+F.Intrinsic.Control.Try
+	V.Local.iOrdinal.Declare(Long)
+	V.Local.sSQL.Declare(String)
+	V.Local.sCalc.Declare(String)
+	V.Local.sRuleDescription.Declare(String)
+	V.Local.sSubDescription.Declare(String)
+	V.Local.sCalcSubDescription.Declare(String)
+	V.Local.sRegexPattern.Declare(String)
+	V.Local.sRegexMatch.Declare(String)
+	V.Local.sRegexValues.Declare(String)
+	V.Local.iC.Declare(Long)
+	V.Local.sValidateMatch.Declare(String)
+	V.Local.sUnitType.Declare(String)
+	V.Local.sVarResults.Declare(String)
+	V.Local.sVarNumber.Declare(String)
+	V.Local.sVarName.Declare(String)
+	V.Local.sVarLineNumber.Declare(String)
+	V.Local.sVarStartPos.Declare(String)
+	V.Local.sVarLength.Declare(String)
+	V.Local.sVarValue.Declare(String)	
+	V.Local.sFindString.Declare(String)
+	V.Local.sReplaceString.Declare(String)
+	V.Local.iLinesOrdinal.Declare(Long)
+	V.Local.sHold.Declare(String)
+	V.Local.sValueSplit.Declare(String)
+	V.Local.sValueAndSplit.Declare(String)
+	V.Local.sValueBetweenSplit.Declare(String)
+	V.Local.bTestVariable.Declare(Boolean,False)
+	V.Local.bIsEqualH.Declare(Boolean)
+	V.Local.bIsEqualL.Declare(Boolean)
+	V.Local.bIsInString.Declare(Boolean)
+	V.Local.sValueL.Declare(String)
+	V.Local.sValueH.Declare(String)
+	V.Local.sTempRegexMatch.Declare(String)
+	V.Local.iStringLength.Declare(Long)
+	V.Local.sCalcRegexMatch.Declare(String)
+	V.Local.iFor.Declare(Long)
+	V.Local.fResult.Declare(Float)
+	V.Local.sResult.Declare(String)
+	V.Local.sHoldValue.Declare(String)
+	V.Local.sErrorMessage.Declare(String)
+	V.Local.bPassed.Declare(Boolean)
+	V.Local.sCalcRegexValues.Declare(String)
+	
+	V.Local.sUnitType.Set(V.Args.sUnitType)
+	V.Local.iOrdinal.Set(V.Args.iOrdinal)
+	V.Local.sRuleDescription.Set(V.Args.sRuleDescription)
+	V.Local.sSubDescription.Set(V.Args.sSubDesc)
+	
+	F.Intrinsic.String.Build("SELECT CONVERT(Calculation, SQL_CHAR) AS Calculation, SUB_DESCR FROM MTC_FORMULA WHERE FormulaNum = '{0}'",V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).FormulaNum!FieldVal,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstCalc",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstCalc.EOF,<>,True)
+		V.Local.sCalc.Set(V.ODBC.con!rstCalc.FieldValString!Calculation)
+		V.Local.sCalcSubDescription.Set(V.ODBC.con!rstCalc.FieldValTrim!Sub_Descr)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstCalc.Close
+	
+	V.Local.sRegexPattern.Set("\{.*?\}")
+	
+	F.Intrinsic.String.RegExMatch(V.Local.sCalc,V.Local.sRegexPattern,True,V.Local.sCalcRegexMatch)
+	
+	F.Intrinsic.Control.If(V.Local.sCalcRegexMatch.Trim,<>,"")
+		F.Intrinsic.String.Split(V.Local.sCalcRegexMatch,"@!@",V.Local.sCalcRegexMatch)
+		
+		F.Intrinsic.Control.For(V.Local.iC,0,V.Local.sCalcRegexMatch.UBound,1)
+			F.Intrinsic.String.Split(V.Local.sCalcRegexMatch(V.Local.iC),"*!*",V.Local.sCalcRegexValues)
+			V.Local.sValidateMatch.Set(V.Local.sCalcRegexValues(1))
+			F.Intrinsic.String.Replace(V.Local.sValidateMatch,"{","",V.Local.sValidateMatch)
+			F.Intrinsic.String.Replace(V.Local.sValidateMatch,"}","",V.Local.sValidateMatch)
+			
+			F.Intrinsic.String.Build("SELECT VariableNumber, Name, LineNumber, StartPosition, Length, Value, Result FROM MTC_VARIABLES WHERE Name = '{0}'",V.Local.sValidateMatch,V.Local.sSQL)
+			F.ODBC.Connection!con.OpenLocalRecordSetRO("rstValidate",V.Local.sSQL)
+			
+			F.Intrinsic.Control.If(v.ODBC.con!rstValidate.EOF,=,True)
+				F.Intrinsic.String.Build("SELECT RuleNumber, Description, ResultPart FROM MTC_RULE_HEADERS WHERE UnitType = '{0}' AND Description = '{1}' ORDER BY ruleNumber",V.Local.sUnitType,V.Local.sValidateMatch,V.Local.sSQL)
+				F.ODBC.Connection!con.OpenLocalRecordSetRO("rstRuleHead",V.Local.sSQL)
+				
+				F.Intrinsic.Control.DoUntil(V.ODBC.con!rstRuleHead.EOF,=,True)
+					F.Intrinsic.Control.CallSub("ReadRules","sRuleNumber",V.ODBC.con!rstRuleHead.FieldValTrim!RuleNumber,"sUnitType",V.Local.sUnitType.Trim,"sRuleDescription",V.ODBC.con!rstRuleHead.FieldValTrim!Description,"sSubDesc",V.Local.sSubDescription)
+					
+					F.Intrinsic.Control.If(V.Args.ReadRules,=,True)
+						V.Local.sVarResults.Set(V.ODBC.con!rstRuleHead.FieldValTrim!ResultPart)
+						F.Intrinsic.String.Build("{{0}}",V.ODBC.con!rstRuleHead.FieldValTrim!Description,V.Local.sFindString)
+						F.Intrinsic.String.Build(" {0} ",V.Local.sVarResults,V.Local.sReplaceString)
+						F.Intrinsic.String.Replace(V.Local.sCalc,V.Local.sFindString,V.Local.sVarResults,V.Local.sCalc)
+						F.Intrinsic.String.Replace(V.Local.sCalcSubDescription,V.Local.sFindString,V.Local.sVarResults,V.Local.sCalcSubDescription)
+						F.Intrinsic.Control.ExitDo
+					F.Intrinsic.Control.Else
+						F.ODBC.con!rstRuleHead.MoveNext
+					F.Intrinsic.Control.EndIf
+					
+				F.Intrinsic.Control.Loop
+				
+				F.ODBC.con!rstRuleHead.Close
+			F.Intrinsic.Control.Else
+				F.Intrinsic.Control.DoUntil(V.ODBC.con!rstValidate.EOF,=,True)
+					V.Local.sVarNumber.Set(V.ODBC.con!rstValidate.FieldValTrim!VariableNumber)
+					F.Intrinsic.String.Build("{{0}}",V.ODBC.con!rstValidate.FieldValTrim!Name,V.Local.sVarName)
+					V.Local.sVarLineNumber.Set(V.ODBC.con!rstValidate.FieldValTrim!LineNumber)
+					V.Local.sVarStartPos.Set(V.ODBC.con!rstValidate.FieldValTrim!StartPosition)
+					V.Local.sVarLength.Set(V.ODBC.con!rstValidate.FieldValTrim!Length)
+					V.Local.sVarValue.Set(V.ODBC.con!rstValidate.FieldValTrim!Value)
+					V.Local.sVarResults.Set(V.ODBC.con!rstValidate.FieldValTrim!Result)
+					F.Intrinsic.Math.Sub(V.Local.sVarLineNumber.Long,1,V.Local.iLinesOrdinal)
+					
+					F.Intrinsic.Control.If(V.Local.sVarValue,=,"")
+						
+						F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLinesOrdinal),V.Local.sVarStartPos.Long,V.Local.sVarLength.Long,V.Local.sHold)
+						F.Intrinsic.String.Build(" {0} ",V.Local.sHold,V.Local.sReplaceString)
+						F.Intrinsic.String.Replace(V.Local.sCalc,V.Local.sVarName,V.Local.sReplaceString,V.Local.sCalc)
+					F.Intrinsic.Control.Else
+						F.Intrinsic.String.Split(V.Local.sVarValue,",",V.Local.sValueSplit)
+						F.Intrinsic.String.Split(V.Local.sVarValue,"&",V.Local.sValueAndSplit)
+						F.Intrinsic.String.Split(V.Local.sVarValue,"-",V.Local.sValueBetweenSplit)
+						
+						F.Intrinsic.Control.If(V.Local.sValueAndSplit.UBound,>=,1)
+							F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLinesOrdinal),V.Local.sVarStartPos,V.Local.sVarLength,V.Local.sHold)
+							
+							V.Local.bIsEqualH.Set(False)
+							V.Local.bIsEqualL.Set(False)
+							
+							F.Intrinsic.String.IsInString(V.Local.sValueAndSplit(0),"=",True,V.Local.bIsInString)
+							
+							F.Intrinsic.Control.If(V.Local.bIsInString,=,True)
+								V.Local.bIsEqualL.Set(True)
+							F.Intrinsic.Control.EndIf
+							
+							F.Intrinsic.String.Build("\w{{0}}",V.Local.sVarLength,V.Local.sRegexPattern)
+							
+							F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueAndSplit(0),"sRegexPattern",V.Local.sRegexPattern)
+							
+							F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+								V.Local.sValueL.Set(V.Args.sRegexReturn)
+							F.Intrinsic.Control.EndIf
+							
+							F.Intrinsic.String.IsInString(V.Local.sValueAndSplit(1),"=",True,V.Local.bIsInString)
+							
+							F.Intrinsic.Control.If(V.Local.bIsInString,=,True)
+								V.Local.bIsEqualH.Set(Treu)
+							F.Intrinsic.Control.EndIf
+							
+							F.Intrinsic.String.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueAndSplit(1),"sRegexPattern",V.Local.sRegexPattern)
+							
+							F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+								V.Local.sValueH.Set(V.Args.sRegexReturn)
+							F.Intrinsic.Control.EndIf
+							
+							F.Intrinsic.Control.If(V.Local.bIsEqualL,=,True)
+								F.Intrinsic.Control.If(V.Local.sHold,>=,V.Local.sValueL)
+									V.Local.bTestVariable.Set(True)
+								F.Intrinsic.Control.Else
+									V.Local.bTestVariable.Set(False)
+								F.Intrinsic.Control.EndIf
+							F.Intrinsic.Control.Else
+								F.Intrinsic.Control.If(V.Local.sHold,>,V.Local.sValueL)
+									V.Local.bTestVariable.Set(True)
+								F.Intrinsic.Control.Else
+									V.Local.bTestVariable.Set(False)
+								F.Intrinsic.Control.EndIf
+							F.Intrinsic.Control.EndIf
+							
+							F.Intrinsic.Control.If(V.Local.bIsEqualH,=,True)
+								F.Intrinsic.Control.If(V.Local.sHold,<=,V.Local.sValueH)
+									V.Local.bTestVariable.Set(True)
+								F.Intrinsic.Control.Else
+									V.Local.bTestVariable.Set(False)
+								F.Intrinsic.Control.EndIf
+							F.Intrinsic.Control.Else
+								F.Intrinsic.Control.If(V.Local.sHold,<,V.Local.sValueH)
+									V.Local.bTestVariable.Set(True)
+								F.Intrinsic.Control.Else
+									V.Local.bTestVariable.Set(False)
+								F.Intrinsic.Control.EndIf
+							F.Intrinsic.Control.EndIf
+							
+						F.Intrinsic.Control.Else
+							F.Intrinsic.Control.If(V.Local.sValueBetweenSplit.UBound,>=,1)
+								F.Intrinsic.Math.Sub(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).LineNumber!FieldValLong,1,V.Local.iLinesOrdinal)
+								F.Intrinsic.String.Len(V.Global.sProcessText(V.Local.iLinesOrdinal),V.Local.iStringLength)
+								
+								F.Intrinsic.Control.If(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).StartPosition!FieldValLong,<>,99)									
+									F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLinesOrdinal),V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).StartPosition!FieldValLong,V.Local.iStringLength)
+								F.Intrinsic.Control.Else
+									F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLinesOrdinal),V.Local.iLinesOrdinal,V.Local.iStringLength)
+									
+									F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sHold,"sRegexPattern",V.Local.sValueSplit(0).Trim)
+									
+									F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+										V.Local.sHold.Set(V.Args.sRegexReturn)
+									F.Intrinsic.Control.EndIf
+								F.Intrinsic.Control.EndIf
+								
+								F.Intrinsic.String.IsInString(V.Local.sValueBetweenSplit(0),"=",True,V.Local.bIsInString)
+								
+								F.Intrinsic.Control.If(V.Local.bIsInString,=,True)
+									V.Local.bIsEqualL.Set(True)
+								F.Intrinsic.Control.EndIf
+								
+								F.Intrinsic.String.Build("\w{{0}}",V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Length!FielValLong,V.Local.sRegexPattern)
+								F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueBetweenSplit(0),"sRegexPattern",V.Local.sRegexPattern)
+								
+								F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+									V.Local.sValueL.Set(V.Args.sRegexReturn)
+								F.Intrinsic.Control.EndIf
+								
+								F.Intrinsic.String.IsInString(V.Local.sValueBetweenSplit(1),"=",True,V.Local.bIsInString)
+								
+								F.Intrinsic.Control.If(V.Local.bIsInString,=,True)
+									V.Local.bIsEqualH.Set(True)
+								F.Intrinsic.Control.EndIf
+								
+								F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueBetweenSplit(1),"sRegexPattern",V.Local.sRegexPattern)
+								
+								F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+									V.Local.sValueH.Set(V.Args.sRegexReturn)
+								F.Intrinsic.Control.EndIf
+								
+								F.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(0),">","",V.Local.sValueBetweenSplit(0))
+								F.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(0),"=","",V.Local.sValueBetweenSplit(0))
+								F.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(1),"<","",V.Local.sValueBetweenSplit(1))
+								f.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(1),"=","",V.Local.sValueBetweenSplit(1))
+								
+								F.Intrinsic.Control.If(V.Local.bIsEqualL,=,True)
+									F.Intrinsic.Control.If(V.Local.sHold.Float,>=,V.Local.sValueBetweenSplit(0))
+										F.Intrinsic.Control.If(V.Local.bIsEqualH,=,True)
+											F.Intrinsic.Control.If(V.Local.sHold.Float,<=,V.Local.sValueBetweenSplit(1))
+												V.Local.bTestVariable.Set(True)
+											F.Intrinsic.Control.EndIf
+										F.Intrinsic.Control.Else
+											F.Intrinsic.Control.If(V.Local.sHold.Float,<,V.Local.sValueBetweenSplit(1))
+												V.Local.bTestVariable.Set(True)
+											F.Intrinsic.Control.EndIf
+										F.Intrinsic.Control.EndIf
+									F.Intrinsic.Control.EndIf
+								F.Intrinsic.Control.Else
+									F.Intrinsic.Control.If(V.Local.sHold.Float,>,V.Local.sValueBetweenSplit(0))
+										F.Intrinsic.Control.If(V.Local.bIsEqualH,=,True)
+										
+											F.Intrinsic.Control.If(V.Local.sHold.Float,<=,V.Local.sValueBetweenSplit(1))
+												V.Local.bTestVariable.Set(True)
+											F.Intrinsic.Control.EndIf
+											
+										F.Intrinsic.Control.Else
+										
+											F.Intrinsic.Control.If(V.Local.sHold.Float,<,V.Local.sValueBetweenSplit(1))
+												V.Local.bTestVariable.Set(True)
+											F.Intrinsic.Control.EndIf
+											
+										F.Intrinsic.Control.EndIf
+									F.Intrinsic.Control.EndIf
+								F.Intrinsic.Control.EndIf
+								
+							F.Intrinsic.Control.Else
+								F.Intrinsic.Control.If(V.Local.sValueSplit.UBound,>=,1)
+									F.Intrinsic.Control.If(V.Local.sVarStartPos,<>,99)
+										F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLinesOrdinal),V.Local.sVarStartPos.Long,V.Local.sVarLength.Long,V.Local.sHold)
+										
+										F.Intrinsic.Control.For(V.Local.iFor,0,V.Local.sValueSplit.UBound,1)
+											F.Intrinsic.Control.If(V.Local.sValueSplit(V.Local.iFor).LTrim,=,V.Local.sHold)
+												V.Local.bTestVariable.Set(True)
+												'may need to keep an eye on this to make sure OCTSRS doesn't exit both for loops
+												F.Intrinsic.Control.ExitFor
+											F.Intrinsic.Control.EndIf
+										F.Intrinsic.Control.Next(V.Local.iFor)
+									F.Intrinsic.Control.Else
+										F.Intrinsic.UI.Msgbox("Floats not allowed in variables")
+									F.Intrinsic.Control.EndIf
+								F.Intrinsic.Control.Else
+									F.Intrinsic.Control.If(V.Local.sVarStartPos,<>,99)
+										F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLinesOrdinal),V.Local.sVarStartPos.Long,V.Local.sVarLength.Long,V.Local.sHold)
+										
+										F.Intrinsic.Control.If(V.Local.sHold,=,V.Local.sVarValue)
+											V.Local.bTestVariable.Set(True)
+										F.Intrinsic.Control.EndIf
+									F.Intrinsic.Control.Else
+										F.Intrinsic.UI.Msgbox("Floats not allowed in variables")
+									F.Intrinsic.Control.EndIf
+								F.Intrinsic.Control.EndIf
+							F.Intrinsic.Control.EndIf
+						F.Intrinsic.Control.EndIf
+						
+						F.Intrinsic.Control.If(V.Local.bTestVariable,=,True)
+							F.Intrinsic.String.Build(" {0} ",V.Local.sVarResults,V.Local.sReplaceString)
+							F.Intrinsic.String.Replace(V.Local.sCalc,V.Local.sVarName,V.Local.sReplaceString,V.Local.sCalc)
+						F.Intrinsic.Control.EndIf
+					F.Intrinsic.Control.EndIf
+				
+					F.ODBC.con!rstValidate.MoveNext
+					
+					F.Intrinsic.Control.If(V.Local.bTestVariable,=,True)
+						F.ODBC.con!rstValidate.MoveLast
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.Loop
+			F.Intrinsic.Control.EndIf
+			
+			F.ODBC.con!rstValidate.Close
+		F.Intrinsic.Control.Next(V.Local.iC)
+	F.Intrinsic.Control.EndIf
+	
+	F.Unofficial.Script.Eval(V.Local.sCalc,V.Local.fResult)
+	V.Local.sResult.Set(V.Local.fResult.String)
+	
+	F.Intrinsic.String.Replace(V.Local.sRuleDescription,"<R>",V.Local.sResult,V.Local.sRuleDescription)
+	F.Intrinsic.String.Replace(V.Local.sSubDescription,"<R>",V.Local.sResult,V.Local.sSubDescription)
+	'Reset all of the value split arrays
+	V.Local.sValueSplit.Redim(-1,-1)
+	V.Local.sValueAndSplit.Redim(-1,-1)
+	V.Local.sValueBetweenSplit.Redim(-1,-1)
+	V.Local.sValueSplit.Redim(0,0)
+	V.Local.sValueAndSplit.Redim(0,0)
+	V.Local.sValueBetweenSplit.Redim(0,0)
+	
+	F.Intrinsic.String.Split(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).FormulaResult!FieldVal,",",V.Local.sValueSplit)
+	F.Intrinsic.String.Split(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).FormulaResult!FieldVal,"&",V.Local.sValueAndSplit)
+	F.Intrinsic.String.Split(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).FormulaResult!FieldVal,"-",V.Local.sValueBetweenSplit)	
+	
+	V.Local.bIsEqualH.Set(False)
+	V.Local.bIsEqualL.Set(False)
+
+	F.Intrinsic.Control.If(V.Local.sValueAndSplit.UBound,>=,1)
+		V.Local.sHold.Set(V.Local.sResult)
+		
+		F.Intrinsic.String.IsInString(V.Local.sValueAndSplit(0),"=",V.Local.bIsInString)
+		
+		F.Intrinsic.Control.If(V.Local.bIsInString,=,True)
+			V.Local.bIsEqualL.Set(True)
+		F.Intrinsic.Control.EndIf
+		
+		F.Intrinsic.String.Build("\w{{0}}",V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Length!FieldValLong,V.Local.sRegexPattern)
+		F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueAndSplit(0),"sRegexPattern",V.Local.sRegexPattern)
+		
+		F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+			V.Local.sValueL.Set(V.Args.sRegexReturn)
+		F.Intrinsic.Control.EndIf
+		
+		F.Intrinsic.String.IsInString(V.Local.sValueAndSplit(1),"=",V.Local.bIsInString)
+		
+		F.Intrinsic.Control.If(V.Local.bIsInString,=,True)
+			V.Local.bIsEqualH.Set(True)
+		F.Intrinsic.Control.EndIf
+		
+		F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueAndSplit(1),"sRegexPattern","[0-9]")
+		
+		F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+			V.Local.sValueH.Set(V.Args.sRegexReturn)
+		F.Intrinsic.Control.EndIf
+		
+		F.Intrinsic.Control.If(V.Local.bIsEqualL,=,True)
+		
+			F.Intrinsic.Control.If(V.Local.sHold,>=,V.Local.sValueL)
+				V.Local.bPassed.Set(True)
+			F.Intrinsic.Control.Else
+				V.Local.bPassed.Set(False)
+			F.Intrinsic.Control.EndIf
+			
+		F.Intrinsic.Control.Else
+		
+			F.Intrinsic.Control.If(V.Lcoal.sHold,>,V.Local.sValueL)
+				V.Local.bPassed.Set(True)
+			F.Intrinsic.Control.Else
+				V.Local.bPassed.Set(False)
+			F.Intrinsic.Control.EndIf
+			
+		F.Intrinsic.Control.EndIf
+		
+		F.Intrinsic.Control.If(V.Local.bIsEqualH,=,True)
+		
+			F.Intrinsic.Control.If(V.Local.sHold,>=,V.Local.sValueH)
+				V.Local.bPassed.Set(True)
+			F.Intrinsic.Control.Else
+				V.Local.bPassed.Set(False)
+			F.Intrinsic.Control.EndIf
+			
+		F.Intrinsic.Control.Else
+		
+			F.Intrinsic.Control.If(V.Lcoal.sHold,>,V.Local.sValueH)
+				V.Local.bPassed.Set(True)
+			F.Intrinsic.Control.Else
+				V.Local.bPassed.Set(False)
+			F.Intrinsic.Control.EndIf
+			
+		F.Intrinsic.Control.EndIf		
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Control.If(V.Local.sValueBetweenSplit.UBound,>=,1)
+			F.Intrinsic.String.IsInString(V.Local.sValueBetweenSplit(0),"=",V.Local.bIsInString)
+		
+			F.Intrinsic.Control.If(V.Local.bIsInString,=,True)
+				V.Local.bIsEqualL.Set(True)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.String.Build("\w{{0}}",V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Length!FieldValLong,V.Local.sRegexPattern)
+			F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueBetweenSplit(0),"sRegexPattern",V.Local.sRegexPattern)
+			
+			F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+				V.Local.sValueL.Set(V.Args.sRegexReturn)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.String.IsInString(V.Local.sValueBetweenSplit(1),"=",V.Local.bIsInString)
+			
+			F.Intrinsic.Control.If(V.Local.bIsInString,=,True)
+				V.Local.bIsEqualH.Set(True)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueAndSplit(1),"sRegexPattern",V.Local.sRegexPattern)
+			
+			F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+				V.Local.sValueH.Set(V.Args.sRegexReturn)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(0),">","",V.Local.sValueBetweenSplit(0))
+			F.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(0),"=","",V.Local.sValueBetweenSplit(0))
+			F.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(1),"<","",V.Local.sValueBetweenSplit(1))
+			F.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(1),"=","",V.Local.sValueBetweenSplit(1))
+			
+			F.Intrinsic.Control.If(V.Local.bIsEqualL,=,True)
+				F.Intrinsic.Control.If(V.Local.sResult.Float,>=,V.Local.sValueBetweenSplit(0).Float)
+					F.Intrinsic.Control.If(V.Local.bIsEqualH,=,True)
+						
+						F.Intrinsic.Control.If(V.Local.sResult.Float,<=,V.Local.sValueBetweenSplit(1))
+							V.Local.bPassed.Set(True)
+						F.Intrinsic.Control.Else
+							V.Local.bPassed.Set(False)
+						F.Intrinsic.Control.EndIf
+						
+					F.Intrinsic.Control.Else
+						
+						F.Intrinsic.Control.If(V.Local.sResult.Float,<,V.Local.sValueBetweenSplit(1).Float)
+							V.Local.bPassed.Set(True)
+						F.Intrinsic.Control.Else
+							V.Local.bPassed.Set(False)
+						F.Intrinsic.Control.EndIf
+						
+					F.Intrinsic.Control.EndIf			
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.Else
+				F.Intrinsic.Control.If(V.Local.sResult.Float,>,V.Local.sValueBetweenSplit(0))
+					F.Intrinsic.Control.If(V.Local.bIsEqualH,=,True)
+						
+						F.Intrinsic.Control.If(V.Local.sResult.Float,<=,V.Local.sValueBetweenSplit(1))
+							V.Local.bPassed.Set(True)
+						F.Intrinsic.Control.Else
+							V.Local.bPassed.Set(False)
+						F.Intrinsic.Control.EndIf
+						
+					F.Intrinsic.Control.Else
+						
+						F.Intrinsic.Control.If(V.Local.sResult.Float,<,V.Local.sValueBetweenSplit(1))
+							V.Local.bPassed.Set(True)
+						F.Intrinsic.Control.Else
+							V.Local.bPassed.Set(False)
+						F.Intrinsic.Control.EndIf
+					
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.ElseIf(V.Local.sValueSplit.UBound,>=,1)
+		
+			F.Intrinsic.Control.For(V.Local.iFor,0,V.Local.sValueSplit.UBound,1)
+				F.Intrinsic.Control.If(V.Local.sValueSplit(V.Local.iFor),=,V.Local.sResult)
+					V.Local.bPassed.Set(True)
+					F.Intrinsic.Control.ExitFor
+				F.Intrinsic.Control.EndIf
+				
+				V.Local.bPassed.Set(False)
+			F.Intrinsic.Control.Next(V.Local.iFor)
+			
+		F.Intrinsic.Control.Else
+			'If nothing returns we test the result itself
+			F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).FormulaResult!FieldVal,"sRegexPattern","[<=>]{1,2}")
+			
+			V.Local.sHold.Set("")
+			F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+				V.Local.sHold.Set(V.Args.sRegexReturn)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.Control.If(V.Local.sHold,=,"")
+
+				F.Intrinsic.Control.If(V.Local.sResult,=,V.Local.sValueSplit(0).Trim)
+					V.Local.bPassed.Set(True)
+				F.Intrinsic.Control.Else
+					V.Local.bPassed.Set(False)
+				F.Intrinsic.Control.EndIf
+				
+			F.Intrinsic.Control.Else
+				F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).FormulaResult!FieldVal,"sRegexPattern","[0-9.]{1,}")
+				
+				F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+					V.Local.sHoldValue.Set(V.Args.sRegexReturn)
+				F.Intrinsic.Control.EndIf
+				
+				F.Intrinsic.Control.If(V.Local.sResult.IsNumeric,=,True)
+				
+					F.Intrinsic.Control.Try
+						F.Intrinsic.Control.IIF(V.Local.sResult.Float,V.Local.sHold,V.Local.sHoldValue.Float,True,False,V.Local.bPassed)
+					F.Intrinsic.Control.CatchWhen(1020)
+						F.Intrinsic.String.Build("Result symbol not found: {0}",V.Local.sHold,V.Local.sErrorMessage)
+						F.Intrinsic.UI.Msgbox(V.Local.sErrorMessage)
+						V.Local.bPassed.Set(False)
+					F.Intrinsic.Control.Catch
+						F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+					F.Intrinsic.Control.EndTry
+					
+				F.Intrinsic.Control.Else
+				
+					F.Intrinsic.Control.Try
+						F.Intrinsic.Control.IIF(V.Local.sResult,V.Local.sHold,V.Local.sHoldValue,True,False,V.Local.bPassed)
+					F.Intrinsic.Control.CatchWhen(1020)
+						F.Intrinsic.String.Build("Result symbol not found: {0}",V.Local.sHold,V.Local.sErrorMessage)
+						F.Intrinsic.UI.Msgbox(V.Local.sErrorMessage)
+						V.Local.bPassed.Set(False)
+					F.Intrinsic.Control.Catch
+						F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+					F.Intrinsic.Control.EndTry
+					
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.If(V.Local.bPassed,=,True)
+		F.Intrinsic.Control.If(V.Local.sCalcSubDescription,<>,"")
+			F.Intrinsic.Variable.AddRV("sSubDescUpdate",V.Local.sCalcSubDescription)
+		F.Intrinsic.Control.Else
+			F.Intrinsic.Variable.AddRV("sSubDescUpdate",V.Local.sSubDescription)
+		F.Intrinsic.Control.EndIf
+		
+		F.Intrinsic.Variable.AddRV("bIsValid",V.Local.bPassed)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Variable.AddRV("bIsValid",V.Local.bPassed)
+		F.Intrinsic.Variable.AddRV("sSubDescUpdate",False)
+	F.Intrinsic.Control.EndIf
+	
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessCalc.End
+
+Program.Sub.ProcessSeq.Start
+F.Intrinsic.Control.Try
+	V.Local.sValueSplit.Declare(String)
+	V.Local.sValueAndSplit.Declare(String)
+	V.Local.sValueBetweenSplit.Declare(String)
+	V.Local.iOrdinal.Declare(Long)
+	V.Local.bTestNotEqual.Declare(Boolean)
+	V.Local.iProcessTextOrdinal.Declare(Long)
+	V.Local.sRegExPattern.Declare(String)
+	V.Local.sRegExMatch.Declare(String)
+	V.Local.iLineNumber.Declare(Long)
+	V.Local.iStringLength.Declare(Long)
+	V.Local.bStringContains.Declare(Boolean)
+	V.Local.bIsEqualH.Declare(Boolean)
+	V.Local.bIsEqualL.Declare(Boolean)
+	V.Local.sValueL.Declare(String)
+	V.Local.sValueH.Declare(String)
+	V.Local.sTempRecordSplit.Declare(String)
+	V.Local.sTempValueSplit.Declare(String)
+	V.Local.sHold.Declare(String)
+	V.Local.bIsLess.Declare(Boolean)
+	V.Local.bIsGreater.Declare(Boolean)
+	V.Local.sTempReplaceReturn.Declare(String)
+	V.Local.iForLoop.Declare(Long)
+	V.Local.bPassed.Declare(Boolean)
+	V.Local.sReadRulesName.Declare(String)
+	
+	V.Local.iOrdinal.Set(V.Args.iOrdinal)
+	
+	F.Intrinsic.String.Build("ReadRules{0}",V.Global.iCallCount,V.Local.sReadRulesName)
+	
+	F.Intrinsic.String.Split(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Value!FieldVal,",",V.Local.sValueSplit)
+	F.Intrinsic.String.Split(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Value!FieldVal,"&",V.Local.sValueAndSplit)
+	F.Intrinsic.String.Split(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Value!FieldVal,"-",V.Local.sValueBetweenSplit)
+
+	
+	'Set the line number and length of the line
+	F.Intrinsic.Math.Sub(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).LineNumber!FieldValLong,1,V.Local.iLineNumber)
+	'We're getting the length of the current line of the text that was copied into the MultiLineTextbox
+	F.Intrinsic.String.Len(V.Global.sProcessText(V.Local.iLineNumber),V.Local.iStringLength)
+	
+	F.Intrinsic.String.IsInString(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Value!FieldVal,"<>",True,V.Local.bTestNotEqual)
+	
+	F.Intrinsic.String.Build("TestNotEqual = {0}",V.Local.bTestNotEqual,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	
+	F.Intrinsic.Control.If(V.Local.bTestNotEqual,=,True)
+	
+		F.Intrinsic.String.Replace(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Value!FieldVal,"<>","",V.Local.sTempReplaceReturn)
+		F.Data.DataTable.SetValue(V.Local.sReadRulesName,V.Local.iOrdinal,"Value",V.Local.sTempReplaceReturn)
+		F.Data.DataTable.AcceptChanges(V.Local.sReadRulesName)
+		F.Intrinsic.String.Trim(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Value!FieldVal,V.Local.sTempReplaceReturn)
+		F.Data.DataTable.SetValue(V.Local.sReadRulesName,V.Local.iOrdinal,"Value",V.Local.sTempReplaceReturn)
+		F.Data.DataTable.AcceptChanges(V.Local.sReadRulesName)
+		
+		F.Intrinsic.Control.If(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).StartPosition!FieldVal,<>,99)
+			F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLineNumber),V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).StartPosition!FieldVal,V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Length!FieldVal,V.Local.sHold)
+			
+			F.Intrinsic.Control.If(V.Local.sHold,<>,V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Value!FieldVal)
+				V.Local.bPassed.Set(True)
+			F.Intrinsic.Control.Else
+				V.Local.bPassed.Set(False)
+			F.Intrinsic.Control.EndIf
+			
+		'This will never occur when getting the main description, this is for later iterations of logic, just the ability to use the same sub
+		F.Intrinsic.Control.Else			
+			F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLineNumber),V.Global.iFloat(V.Local.iLineNumber),V.Local.iStringLength,V.Local.sHold)
+			F.Intrinsic.String.IsInString(V.Local.sHold,V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Value!FieldVal,True,V.Local.bStringContains)
+			
+			'If no matches are found for the value, then we set the Return to true otherwise if there is a match return false
+			F.Intrinsic.Control.If(V.Local.bStringContains,=,True)
+				V.Local.bPassed.Set(False)
+			F.Intrinsic.Control.Else
+				V.Local.bPassed.Set(True)
+			F.Intrinsic.Control.EndIf
+			
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Else
+		'Check the uBound of the ValueAndSplit
+		F.Intrinsic.Control.If(V.Local.sValueAndSplit.UBound,>=,1)
+			F.Intrinsic.String.Build("ValueAndSplit(0) = {0}",V.Local.sValueAndSplit(0),V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+
+			F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLineNumber),V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).StartPosition!FieldValLong,V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Length!FieldValLong,V.Local.sHold)
+			F.Intrinsic.String.Build("\w{{0}}",V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Length!FieldVal,V.Local.sRegExPattern)
+			F.Intrinsic.String.IsInString(V.Local.sValueAndSplit(0),"=",True,V.Local.bIsEqualL)
+			
+			F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueAndSplit(0).Trim,"sRegexPattern",V.Local.sRegexPattern)
+			
+			'RegexMatch returns a string with an outer delimiter @!@ and an inner delimiter *!*
+			F.Intrinsic.String.If(V.Args.sRegExReturn,<>,"")
+				V.Local.sValueL.Set(V.Args.sRegExReturn)
+			F.Intrinsic.Control.EndIf
+			
+			'Now we check the "high" value to see if it contains an = sign
+			F.Intrinsic.String.IsInString(V.Local.sValueAndSplit(1),"=",True,V.Local.bIsEqualH)
+			
+			F.Intrinsic.String.Build("ValueAndSplit(1) = {0}",V.Local.sValueAndSplit(1),V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueAndSplit(1).Trim,"sRegexPattern",V.Local.sRegexPattern)
+
+			F.Intrinsic.String.If(V.Args.sRegExReturn,<>,"")
+				V.Local.sValueH.Set(V.Args.sRegexReturn)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.Control.If(V.Local.bIsEqualL,=True)			
+				F.Intrinsic.Control.If(V.Local.sHold,>=,V.Local.sValueL)
+					V.Local.bPassed.Set(True)
+				F.Intrinsic.Control.Else
+					V.Local.bPassed.Set(False)
+				F.Intrinsic.Control.EndIf				
+			F.Intrinsic.Control.Else
+				F.Intrinsic.Control.If(V.Local.sHold,>,V.Local.sValueL)
+					V.Local.bPassed.Set(True)
+				F.Intrinsic.Control.Else
+					V.Local.bPassed.Set(False)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.Control.If(V.Local.bIsEqualL,=True)			
+				F.Intrinsic.Control.If(V.Local.sHold,>=,V.Local.sValueL)
+					V.Local.bPassed.Set(True)
+				F.Intrinsic.Control.Else
+					V.Local.bPassed.Set(False)
+				F.Intrinsic.Control.EndIf				
+			F.Intrinsic.Control.Else
+				F.Intrinsic.Control.If(V.Local.sHold,>,V.Local.sValueL)
+					V.Local.bPassed.Set(True)
+				F.Intrinsic.Control.Else
+					V.Local.bPassed.Set(False)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+			
+		'If nothing ended up being split by the & then check on the between
+		F.Intrinsic.Control.Else
+			'Go through logic for the between split
+			F.Intrinsic.Control.If(V.Local.sValueBetweenSplit.UBound,>=,1)
+				F.Intrinsic.String.Build("ValueBetweenSplit(0) = {0}",V.Local.sValueBetweenSplit(0),V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+				
+				F.Intrinsic.Control.If(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).StartPosition.FieldValLong,<>,99)
+					F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLineNumber),V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).StartPosition.FieldValLong,V.DataTable.ReadRules[V.Global.iCallCount](v.Local.iOrdinal).Length!FieldValLong,V.Local.sHold)
+				F.Intrinsic.Control.Else
+					F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLineNumber),V.Global.iFloat(V.Local.iLineNumber),V.Local.iStringLength,V.Local.sHold)
+					
+					F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sHold,"sRegexPattern",V.Local.sValueSplit(0).Trim)
+					
+					F.Intrinsic.Control.If(V.Args.sRegExReturn.Trim,<>,"")
+						V.Local.sHold.Set(V.Args.sRegExReturn)
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.EndIf
+				
+				F.Intrinsic.String.IsInString(V.Local.sValueBetweenSplit(0),"=",True,V.Local.bIsEqualL)
+				F.Intrinsic.String.Build("\w{{0}}",V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Length!FieldVal,V.Local.sRegExPattern)
+				F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueBetweenSplit(0),"sRegexPattern",V.Local.sRegexPattern)
+				
+				F.Intrinsic.Control.If(V.Args.sRegExReturn.Trim,<>,"")
+					V.Local.sValueL.Set(V.Args.sRegexReturn)
+				F.Intrinsic.Control.EndIf
+				
+				F.Intrinsic.String.Build("ValueBetweenSplit(1) = {0}",V.Local.sValueBetweenSplit(1),V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+				
+				F.Intrinsic.String.IsInString(V.Local.sValueBetweenSplit(1),"=",True,V.Local.bIsEqualH)
+				F.Intrinsic.String.Build("\w{{0}}",V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Length!FieldVal,V.Local.sRegExPattern)
+				F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sValueBetweenSplit(1),"sRegexPattern",V.Local.sregexPattern)
+				
+				F.Intrinsic.Control.If(V.Args.sRegExReturn.Trim,<>,"")
+					V.Local.sValueH.Set(V.Args.sRegExReturn.Trim)
+				F.Intrinsic.Control.EndIf
+				
+				F.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(0),">","",V.Local.sValueBetweenSplit(0))
+				F.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(0),"=","",V.Local.sValueBetweenSplit(0))
+				F.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(1),"<","",V.Local.sValueBetweenSplit(1))
+				F.Intrinsic.String.Replace(V.Local.sValueBetweenSplit(1),"=","",V.Local.sValueBetweenSplit(1))
+				F.Intrinsic.String.Trim(V.Local.sValueBetweenSplit(0),V.Local.sValueBetweenSplit(0))
+				F.Intrinsic.String.Trim(V.Local.sValueBetweenSplit(1),V.Local.sValueBetweenSplit(1))
+				
+				F.Intrinsic.Control.If(V.Local.bIsEqualL,=,True)
+					F.Intrinsic.Control.If(V.Local.sHold,>=,V.Local.sValueBetweenSplit(0))
+						F.Intrinsic.Control.If(V.Local.bIsEqualH,=,True)
+						
+							F.Intrinsic.Control.If(V.Local.sHold,<=,V.Local.sValueBetweenSplit(1))
+								V.Local.bPassed.Set(True)
+							F.Intrinsic.Control.EndIf
+							
+						F.Intrinsic.Control.Else
+						
+							F.Intrinsic.Control.If(V.Local.sHold,<,V.Local.sValueBetweenSplit(1))
+								V.Local.bPassed.Set(True)
+							F.Intrinsic.Control.EndIf
+							
+						F.Intrinsic.Control.EndIf
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.Else
+					F.Intrinsic.Control.If(V.Local.sHold,>,V.Local.sValueBetweenSplit(0))
+						F.Intrinsic.Control.If(V.Local.bIsEqualH,=,True)
+						
+							F.Intrinsic.Control.If(V.Local.sHold,<=,V.Local.sValueBetweenSplit(1))
+								V.Local.bPassed.Set(True)
+							F.Intrinsic.Control.EndIf
+							
+						F.Intrinsic.Control.Else
+							
+							F.Intrinsic.Control.If(V.Local.sHold,<,V.Local.sValueBetweenSplit(1))
+								V.Local.bPassed.Set(True)
+							F.Intrinsic.Control.EndIf
+							
+						F.Intrinsic.Control.EndIf
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.EndIf	
+			F.Intrinsic.Control.Else
+				F.Intrinsic.Control.If(V.Local.sValueSplit.UBound,>=,1)
+					F.Intrinsic.String.Build("ValueSplit(0) = {0}",V.Local.sValueSplit(0),V.Global.sLogFileText)
+					'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+					
+					F.Intrinsic.Control.If(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).StartPosition!FieldValLong,<>,99)
+						F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLineNumber),V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).StartPosition!FieldValLong,V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iordinal).Length.FieldValLong,V.Local.sHold)
+												
+						F.Intrinsic.Control.For(V.Local.iForLoop,0,V.Local.sValueSplit.UBound,1)
+							F.Intrinsic.String.Build("Value Split Value Loop = {0}",V.Local.sValueSplit(V.Local.iForLoop),V.Global.sLogFileText)
+							'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+							F.Intrinsic.Control.If(V.Local.sValueSplit(V.Local.iForLoop).Trim,=,V.Local.sHold)
+								V.Local.bPassed.Set(True)
+								V.Local.iForLoop.Set(V.Local.sValueSplit.UBound)
+							F.Intrinsic.Control.Else
+								V.Local.bPassed.Set(False)
+							F.Intrinsic.Control.EndIf
+						F.Intrinsic.Control.Next(V.Local.iForLoop)
+					F.Intrinsic.Control.Else
+						F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLineNumber),V.Global.iFloat(V.Local.iLineNumber),V.Local.iStringLength,V.Local.sHold)
+						
+						F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sHold,"sRegexPattern",V.Local.sValueSplit(0).Trim)
+												
+						F.Intrinsic.Control.If(V.Args.sRegExReturn.Trim,<>,"")
+							V.Local.sHold.Set(V.Args.sRegexReturn)
+							
+							F.Intrinsic.Control.For(V.Local.iForLoop,0,V.Local.sValueSplit.UBound,1)
+								F.Intrinsic.String.Build("Value Split Value Loop = {0}",V.Local.sValueSplit(V.Local.iForLoop),V.Global.sLogFileText)
+								'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+								F.Intrinsic.Control.If(V.Local.sValueSplit(V.Local.iForLoop).Trim,=,V.Local.sHold)
+									V.Local.bPassed.Set(True)
+									V.Local.iForLoop.Set(V.Local.sValueSplit.Ubound)
+								F.Intrinsic.Control.Else
+									V.Local.bPassed.Set(False)
+								F.Intrinsic.Control.EndIf
+							F.Intrinsic.Control.Next(V.Local.iForLoop)
+						F.Intrinsic.Control.Else
+							V.Local.bPassed.Set(False)
+						F.Intrinsic.Control.EndIf
+						
+					F.Intrinsic.Control.EndIf					
+				'If there is still nothing split then we just check on the Line Number
+				F.Intrinsic.Control.Else
+					V.Global.sLogFileText.Set("Nothing was Split")
+					'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+					
+					F.Intrinsic.Control.If(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).StartPosition!FieldValLong,<>,99)
+						F.Intrinsic.Math.Sub(V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).LineNumber!FieldValLong,1,V.Local.iLineNumber)
+						F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLineNumber),V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).StartPosition!FieldValLong,V.DataTable.ReadRules[V.Global.iCallCount](V.Local.iOrdinal).Length!FieldValLong,V.Local.sHold)
+						
+						F.Intrinsic.String.IsInString(V.Local.sValueBetweenSplit(0),"=",True,V.Local.bIsEqualL)
+						F.Intrinsic.String.IsInString(V.Local.sValueBetweenSplit(0),"<",True,V.Local.bIsLess)
+						F.Intrinsic.String.IsInString(V.Local.sValueBetweenSplit(0),">",True,V.Local.bIsGreater)
+						
+						'Replace all of what we just check for so that we have just the value in the string without the operands
+						F.Intrinsic.String.Replace(v.Local.sValueSplit(0),"=","",V.Local.sValueSplit(0))
+						F.Intrinsic.String.Replace(v.Local.sValueSplit(0),"<","",V.Local.sValueSplit(0))
+						F.Intrinsic.String.Replace(v.Local.sValueSplit(0),">","",V.Local.sValueSplit(0))
+						F.Intrinsic.String.Trim(V.Local.sValueSplit(0),V.Local.sValueSplit(0))
+						
+						F.Intrinsic.Control.If(V.Local.bIsLess,=,True)
+							F.Intrinsic.Control.If(V.Local.bIsEqualL,=,True)
+							
+								F.Intrinsic.Control.If(V.Local.sHold,<=,V.Local.sValueSplit(0))
+									V.Local.bPassed.Set(True)
+								F.Intrinsic.Control.EndIf
+								
+							F.Intrinsic.Control.Else
+							
+								F.Intrinsic.Control.If(V.Local.sHold,<,V.Local.sValueSplit(0))
+									V.Local.bPassed.Set(True)
+								F.Intrinsic.Control.EndIf
+								
+							F.Intrinsic.Control.EndIf
+						F.Intrinsic.Control.ElseIf(V.Local.bIsGreater,=,True)
+							F.Intrinsic.Control.If(V.Local.bIsEqualL,=,True)
+							
+								F.Intrinsic.Control.If(V.Local.sHold,>,V.Local.sValueSplit(0))
+									V.Local.bPassed.Set(True)
+								F.Intrinsic.Control.EndIf
+								
+							F.Intrinsic.Control.Else
+							
+								F.Intrinsic.Control.If(V.Local.sHold,>,V.Local.sValueSplit(0))
+									V.Local.bPassed.Set(True)
+								F.Intrinsic.Control.EndIf
+								
+							F.Intrinsic.Control.EndIf
+						F.Intrinsic.Control.ElseIf(V.Local.bIsLess,=,False,"AND",V.Local.bIsGreater,=,False)
+						
+							F.Intrinsic.Control.If(V.Local.sHold,=,V.Local.sValueSplit(0))
+								V.Local.bPassed.Set(True)
+							F.Intrinsic.Control.Else
+								V.Local.bPassed.Set(False)
+							F.Intrinsic.Control.EndIf
+							
+						F.Intrinsic.Control.Else
+							V.Local.bPassed.Set(False)
+						F.Intrinsic.Control.EndIf
+						
+					F.Intrinsic.Control.Else
+						F.Intrinsic.String.Mid(V.Global.sProcessText(V.Local.iLineNumber),V.Global.iFloat(V.Local.iLineNumber),V.Local.iStringLength,V.Local.sHold)
+						
+						F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sHold,"sRegexPattern",V.Local.sValueSplit(0).Trim)
+						
+						F.Intrinsic.Control.If(V.Args.sRegExReturn.Trim,<>,"")
+							V.Local.sHold.Set(V.Args.sRegExReturn)
+							
+							F.Intrinsic.Control.If(V.Local.sHold,=,V.Local.sValueSplit(0).Trim)
+								V.Local.bPassed.Set(True)
+							F.Intrinsic.Control.EndIf
+						F.Intrinsic.Control.Else
+							V.Local.bPassed.Set(False)
+						F.Intrinsic.Control.EndIf
+						
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.String.Build("Passed? {0}",V.Local.bPassed,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)	
+	
+	F.Intrinsic.Variable.AddRV("bIsValid",V.Local.bPassed)
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessSeq.End
+
+Program.Sub.ProcessRPM.Start
+F.Intrinsic.Control.Try
+	V.Local.sPartFirst.Declare(String)
+	V.Local.sPartSecond.Declare(String)
+	V.Local.sTurn.Declare(String)
+	V.Local.sCFM.Declare(String)
+	V.Local.sTESP.Declare(String)
+	V.Local.sSQL.Declare(String)
+	V.Local.sHPCode.Declare(String)
+	V.Local.sAccessory.Declare(String)
+	V.Local.bAOne.Declare(Boolean)
+	V.Local.fHold.Declare(Float)
+	V.Local.sSize.Declare(String)
+	V.Local.iCFM.Declare(Long)
+	V.Local.sACFM.Declare(String)
+	V.Local.sRPM.Declare(String)
+	V.Local.bProcessRPM.Declare(Boolean)
+	V.Local.sErrorMessage.Declare(String)
+	
+	F.Intrinsic.String.Mid(V.Global.sProcessText(1),4,6,V.Local.sCFM)
+	F.Intrinsic.String.Mid(V.Global.sProcessText(1),10,3,V.Local.sTESP)
+
+	F.Intrinsic.Control.If(V.Local.sTESP.IsNumeric,=,True)
+		V.Local.fHold.Set(V.Local.sTESP.Float)
+		
+		F.Intrinsic.Control.SelectCase(V.Local.fHold)
+			F.Intrinsic.Control.CaseRange(0,100)
+				V.Local.fHold.Set(100)
+			F.Intrinsic.Control.CaseRange(101,125)
+				V.Local.fHold.Set(125)
+			F.Intrinsic.Control.CaseRange(126,150)
+				V.Local.fHold.Set(150)
+			F.Intrinsic.Control.CaseRange(151,175)
+				V.Local.fHold.Set(175)
+			F.Intrinsic.Control.CaseRange(176,200)
+				V.Local.fHold.Set(200)
+			F.Intrinsic.Control.CaseRange(201,225)
+				V.Local.fHold.Set(225)
+			F.Intrinsic.Control.CaseRange(226,250)
+				V.Local.fHold.Set(250)
+			F.Intrinsic.Control.CaseRange(251,275)
+				V.Local.fHold.Set(275)
+			F.Intrinsic.Control.CaseRange(276,300)
+				V.Local.fHold.Set(300)
+			F.Intrinsic.Control.CaseRange(301,325)
+				V.Local.fHold.Set(325)
+			F.Intrinsic.Control.CaseRange(326,350)
+				V.Local.fHold.Set(350)
+			F.Intrinsic.Control.CaseRange(351,375)
+				V.Local.fHold.Set(375)
+			F.Intrinsic.Control.CaseRange(376,400)
+				V.Local.fHold.Set(400)
+			F.Intrinsic.Control.CaseRange(401,425)
+				V.Local.fHold.Set(425)
+			F.Intrinsic.Control.CaseRange(426,450)
+				V.Local.fHold.Set(450)
+			F.Intrinsic.Control.CaseRange(451,475)
+				V.Local.fHold.Set(475)
+			F.Intrinsic.Control.CaseRange(476,500)
+				V.Local.fHold.Set(500)
+			F.Intrinsic.Control.CaseRange(501,525)
+				V.Local.fHold.Set(525)
+			F.Intrinsic.Control.CaseRange(526,550)
+				V.Local.fHold.Set(550)
+			F.Intrinsic.Control.CaseRange(551,575)
+				V.Local.fHold.Set(575)
+			F.Intrinsic.Control.CaseRange(576,600)
+				V.Local.fHold.Set(600)
+			F.Intrinsic.Control.CaseRange(601,625)
+				V.Local.fHold.Set(625)
+			F.Intrinsic.Control.CaseRange(626,650)
+				V.Local.fHold.Set(650)
+			F.Intrinsic.Control.CaseRange(651,675)
+				V.Local.fHold.Set(675)
+		F.Intrinsic.Control.EndSelect
+		
+		V.Local.sTESP.Set(V.Local.fHold.String)
+		
+		F.Intrinsic.String.Build("TESP rounded to {0}",V.Local.sTESP,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("TESP {0} value is not numeric",V.Local.sTESP,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.If(V.Local.sCFM.IsNumeric,=,True)
+		V.Local.iCFM.Set(V.Local.sCFM.Long)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.String.Build("SELECT ACFM FROM MTCX_RPM WHERE ACFM = '{0}' AND UNITTYPE = 'DFL' ORDER BY ACFM",V.Local.sCFM,V.Local.sSQL)
+	
+	F.Intrinsic.String.Build("Opening Recordset rstACFM with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstACFM",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstACFM.EOF,<>,True)
+		V.Local.iCFM.Set(V.ODBC.con!rstACFM.FieldValLong!ACFM)
+		V.Local.sCFM.Set(V.ODBC.con!rstACFM.FieldValTrim!ACFM)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("SELECT ACFM FROM MTCX_RPM WHERE ACFM > '{0}' AND UNITTYPE = 'DFL' ORDER BY ACFM",V.Local.sCFM,V.Local.sSQL)
+		
+		F.Intrinsic.String.Build("Opening Recordset rstACFM2 with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		
+		F.ODBC.Connection!con.OpenLocalRecordSetRO("rstACFM2",V.Local.sSQL)
+		
+		F.Intrinsic.Control.If(V.ODBC.con!rstACFM2.EOF,<>,True)
+			V.Local.sCFM.Set(V.ODBC.con!rstACFM2.FieldValTrim!ACFM)
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.con!rstACFM2.Close
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstACFM.Close
+	
+	F.Intrinsic.String.Build("SELECT RPM FROM MTCX_RPM WHERE ACFM = '{0}' AND TESP = '{1}' AND UNITTYPE = 'DFL'",V.Local.sCFM,V.Local.sTESP,V.Local.sSQL)
+	
+	F.Intrinsic.String.Build("Opening Recordset rstRPM with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	
+	F.ODBC.Connection!con.OpenLocalRecordsetRO("rstRPM",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstRPM.EOF,=,True)
+		F.Intrinsic.String.Build("SELECT RPM FROM MTCX_RPM WHERE ACFM >= '{0}' AND TESP >= '{1}' AND UNITTYPE = 'DFL' ORDER BY RPM ASC",V.Local.sCFM,V.Local.sTESP,V.Local.sSQL)
+		
+		F.Intrinsic.String.Build("Opening Recordset rstRPM2 with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		
+		F.ODBC.Connection!con.OpenLocalRecordsetRO("rstRPM2",V.Local.sSQL)
+		
+		F.Intrinsic.Control.If(V.ODBC.con!rstRPM2.EOF,<>,True)
+			F.Intrinsic.Control.If(V.ODBC.con!rstRPM2.FieldVal!RPM,<>,"")
+				V.Local.sRPM.Set(V.ODBC.con!rstRPM2.FieldValRTrim!RPM)
+				F.Intrinsic.String.Build("RPM value set to {0}",V.Local.sRPM,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Else
+			V.Global.sLogFileText.Set("RPM Value could not be found")
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.con!rstRPM2.Close
+	F.Intrinsic.Control.Else
+		V.Local.sRPM.Set(V.ODBC.con!rstRPM.FieldValRTrim!RPM)
+		F.Intrinsic.String.Build("RPM value set to {0}",V.Local.sRPM,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstRPM.Close
+	
+	F.Intrinsic.String.Mid(V.Global.sProcessText(1),1,1,V.Local.sHPCode)
+	
+	F.Intrinsic.Control.SelectCase(V.Local.sHPCode)
+		F.Intrinsic.Control.CaseAny("A","B","C","D","E")
+			V.Local.sHPCode.Set("1")
+		F.Intrinsic.Control.CaseAny("F","G")
+			V.Local.sHPCode.Set("2")
+		F.Intrinsic.Control.Case("H")			
+			V.Local.sHPCode.Set("3")
+		F.Intrinsic.Control.Case("J")
+			V.Local.sHPCode.Set("4")
+		F.Intrinsic.Control.Case("K")
+			V.Local.sHPCode.Set("5")
+		F.Intrinsic.Control.CaseAny("L","M")
+			V.Local.sHPCode.Set("6")
+		F.Intrinsic.Control.Case("N")
+			V.Local.sHPCode.Set("7")
+	F.Intrinsic.Control.EndSelect
+	
+	F.Intrinsic.Control.If(V.Local.sHPCode.IsNumeric,=,False)
+		V.Local.bProcessRPM.Set(True)
+		F.Intrinsic.String.Build("RPM={0}()",V.Local.sRPM.Trim,V.Local.sRPM)
+		F.Intrinsic.Variable.AddRV("sPart1",V.Local.sPartFirst)
+		F.Intrinsic.Variable.AddRV("sPart2",V.Local.sPartSecond)
+		F.Intrinsic.Variable.AddRV("bIsValid",V.Local.bProcessRPM)
+		F.Intrinsic.Variable.AddRV("sRPM",V.Local.sRPM)
+		F.Intrinsic.Variable.AddRV("sTurn",V.Local.sTurn)
+		F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.String.Build("HPCode {0} is numeric. Continuing",V.Local.sHPCode,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	
+	F.ODBC.Connection!con.OpenLocalRecordsetRO("rstFPosition","SELECT FloatPostion FROM MTC_LINE_INFO WHERE UnitType = 'DFL' AND LineNumber = 1")
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstFPosition.EOF,<>,True)
+		F.Intrinsic.String.Mid(V.Global.sProcessText(0),V.ODBC.con!rstFPosition.FieldValFloat!FloatPostion,V.Local.sAccessory)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Mid(V.Global.sProcessText(0),34,V.Local.sAccessory)
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstFPosition.Close
+	
+	F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sAccessory,"sRegexPattern","A1")
+	
+	F.Intrinsic.Control.If(V.Args.sRegexReturn.Trim,<>,"")
+		F.Intrinsic.Control.If(V.Args.sRegexReturn,=,"A1")
+			V.Local.bAOne.Set(True)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Else
+		V.Local.bAOne.Set(False)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.If(V.Local.bAOne,=,True)
+		F.Intrinsic.String.Build("SELECT TURN, DVNP_NUM, RPM FROM MTCX_ADFL WHERE HPCODE = '{0}' AND RPM = '{1}'",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+		
+		F.Intrinsic.String.Build("Opening Recordset rstADFL with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+		
+		F.ODBC.Connection!con.OpenLocalRecordsetRO("rstADFL",V.Local.sSQL)
+		
+		F.Intrinsic.Control.If(V.ODBC.con!rstADFL.EOF,=,True)
+			F.Intrinsic.String.Build("SELECT TURN, DVNP_NUM, RPM FROM MTCX_ADFL WHERE HPCODE = '{0}' AND RPM > '{1}' ORDER BY RPM",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+			
+			F.Intrinsic.String.Build("Opening Recordset rstADFL2 with Query {0}",v.Local.sSQL,V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			F.ODBC.Connection!con.OpenLocalRecordSetRO("rstADFL2",V.Local.sSQL)
+			
+			F.Intrinsic.Control.If(V.ODBC.con!rstADFL2.EOF,=,False)
+				F.Intrinsic.Control.If(V.ODBC.con!rstADFL2.FieldValTrim!TURN,<>,"")
+					V.Local.sTurn.Set(V.ODBC.con!rstADFL2.FieldValTrim!TURN)
+					V.Local.sPartFirst.Set(V.ODBC.con!rstADFL2.FieldValTrim!DVNP_NUM)
+					
+					F.Intrinsic.String.Build("RPM={0}({1}), T.O.={2}",V.Local.sRPM.Trim,V.ODBC.con!rstADFL2.FieldValTrim!RPM,V.Local.sTurn.RTrim,V.Local.sRPM)
+					
+					F.Intrinsic.String.Build("RPM set to {0}",V.Local.sRPM,V.Global.sLogFileText)
+					'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+					
+					V.Local.sPartSecond.Set("")
+					V.Local.bProcessRPM.Set(True)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Build("No Match found for HPCODE: {0} AND RPM: {1}",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+			F.Intrinsic.Control.EndIf
+			
+			F.ODBC.con!rstADFL2.Close
+		F.Intrinsic.Control.Else
+			F.Intrinsic.Control.If(V.ODBC.con!rstADFL.FieldValTrim!TURN,<>,"")
+				V.Local.sTurn.Set(V.ODBC.con!rstADFL.FieldValTrim!TURN)
+				V.Local.sPartFirst.Set(V.ODBC.con!rstADFL.FieldValTrim!DVNP_NUM)
+				
+				F.Intrinsic.String.Build("RPM={1}({2}),T.O.={0}",V.Local.sRPM.Trim,V.ODBC.con!rstADFL.FieldValTrim!RPM,V.Local.sTurn,V.Local.sRPM)
+				
+				F.Intrinsic.String.Build("RPM set to {0}",V.Local.sRPM,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+				
+				V.Local.sPartSecond.Set("")
+				V.Local.bProcessRPM.Set(True)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.con!rstADFL.Close
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Control.If(V.Local.sHPCode,<=,2)
+			
+			F.Intrinsic.String.Build("SELECT TURN, DVNP_NUM, RPM FROM MTCX_ADFL WHERE HPCODE = '{0}' AND RPM = '{1}'",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+			
+			F.Intrinsic.String.Build("Opening Recordset rstDVNP with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			F.ODBC.Connection!con.OpenLocalRecordsetRO("rstDVNP",V.Local.sSQL)
+			
+			F.Intrinsic.Control.If(V.ODBC.con!rstDVNP.EOF,=,True)				
+				F.Intrinsic.String.Build("SELECT TURN, DVNP_NUM, RPM FROM MTCX_ADFL WHERE HPCODE = '{0}' AND RPM > '{1}'",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+
+				F.Intrinsic.String.Build("Opening Recordset rstDVNP2 with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+				
+				F.ODBC.Connection!con.OpenLocalRecordSetRO("rstDVNP2",V.Local.sSQL)
+				
+				F.Intrinsic.Control.If(V.ODBC.con!rstDVNP2.EOF,<>,True)
+					F.Intrinsic.Control.If(V.ODBC.con!rstDVNP2.FieldVal!TURN,<>,"")
+						V.Local.sTurn.Set(V.ODBC.con!rstDVNP2.FieldVal!Turn)
+						V.Local.sPartFirst.Set(V.ODBC.con!rstDVNP2.FieldVal!DVNP_NUM)
+						
+						V.Local.sPartSecond.Set("")
+						F.Intrinsic.String.Build("RPM={0}({1}), T.O.={2}",V.Local.sRPM.Trim,V.ODBC.con!rstDVNP2.FieldValTrim!RPM,V.Local.sTurn.Trim,V.Local.sRPM)
+						
+						F.Intrinsic.String.Build("RPM set to {0}",V.Local.sRPM,V.Global.sLogFileText)
+						'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+						
+						V.Local.bProcessRPM.Set(True)
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.Else
+					F.Intrinsic.String.Build("No Match found for HPCODE: {0} AND RPM: {1}",V.Local.sHPCode,V.Local.sRPM,V.Local.sErrorMessage)
+					F.Intrinsic.UI.Msgbox(V.Local.sErrorMessage)
+				F.Intrinsic.Control.EndIf
+				
+				F.ODBC.con!rstDVNP2.Close
+			F.Intrinsic.Control.Else
+				F.Intrinsic.Control.If(V.ODBC.con!rstDVNP.FieldVal!TURN,<>,"")
+					V.Local.sTurn.Set(V.ODBC.con!rstDVNP.FieldValTrim!TURN)
+					V.Local.sPartFirst.Set(V.ODBC.con!rstDVNP.FieldValTrim!DVNP_NUM)
+					
+					V.Local.sPartSecond.Set("")
+					V.Local.bProcessRPM.Set(True)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+			
+			F.ODBC.con!rstDVNP.Close
+		F.Intrinsic.Control.Else			
+			F.Intrinsic.String.Build("SELECT DVRP_NUM, DVNP_NUM FROM MTCX_FDFL WHERE HPCODE = '{0}' AND RPM = '{1}'",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+			
+			F.Intrinsic.String.Build("Opening Recordset rstFDFL with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+			'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+			
+			F.ODBC.Connection!con.OpenLocalRecordSetRO("rstFDFL",V.Local.sSQL)
+			
+			F.Intrinsic.Control.If(V.ODBC.con!rstFDFL.EOF,=,True)				
+				F.Intrinsic.String.Build("SELECT DVRP_NUM, DVNP_NUM, RPM FROM MTCX_FDFL WHERE HPCODE = '{0}' AND RPM > '{1}' ORDER BY RPM",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+				
+				F.Intrinsic.String.Build("Opening Recordset rstFDFL2 with Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+				'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+				
+				F.ODBC.Connection!con.OpenLocalRecordSetRO("rstFDFL2",V.Local.sSQL)
+				
+				F.Intrinsic.Control.If(V.ODBC.con!rstFDFL2.EOF,<>,True)
+					F.Intrinsic.Control.If(V.ODBC.con!rstFDFL2.FieldVal!DVRP_NUM,<>,"")
+						V.Local.sTurn.Set("")
+						V.Local.sPartFirst.Set(V.ODBC.con!rstFDFL2.FieldVal!DVRP_NUM)
+						V.Local.sPartSecond.Set(V.ODBC.con!rstFDFL2.FieldVal!DVNP_NUM)
+						
+						F.Intrinsic.String.Build("RPM={0}({1})",V.Local.sRPM.Trim,V.ODBC.con!rstFDFL2.FieldValTrim!RPM,V.Local.sRPM)
+						
+						F.Intrinsic.String.Build("RPM set to {0}",V.Local.sRPM,V.Global.sLogFileText)
+						'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+						
+						V.Local.bProcessRPM.Set(True)
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.Else
+					F.Intrinsic.String.Build("No Match found for HPCODE: {0} AND RPM: {1}",V.Local.sHPCode,V.Local.sRPM,V.Local.sErrorMessage)
+					F.Intrinsic.UI.Msgbox(V.Local.sErrorMessage)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.Else
+				F.Intrinsic.Control.If(V.ODBC.con!rstFDFL.FieldVal!DVRP_NUM,<>,"")
+					V.Local.sTurn.Set("")
+					V.Local.sPartFirst.Set(V.ODBC.con!rstFDFL.FieldVal!DVRP_NUM)
+					V.Local.sPartSecond.Set(V.ODBC.con!rstFDFL.FieldVal!DVNP_NUM)
+					V.Local.bProcessRPM.Set(True)
+					F.Intrinsic.String.Build("RPM={0}({0})",V.Local.sRPM.Trim,V.Local.sRPM)
+
+					F.Intrinsic.String.Build("RPM set to {0}",V.Local.sRPM,V.Global.sLogFileText)
+					'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+			
+			F.ODBC.con!rstFDFL.Close
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Variable.AddRV("sPart1",V.Local.sPartFirst)
+	F.Intrinsic.Variable.AddRV("sPart2",V.Local.sPartSecond)
+	F.Intrinsic.Variable.AddRV("bIsValid",V.Local.bProcessRPM)
+	F.Intrinsic.Variable.AddRV("sRPM",V.Local.sRPM)
+	F.Intrinsic.Variable.AddRV("sTurn",V.Local.sTurn)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessRPM.End
+
+Program.Sub.ProcessRPMDFCM.Start
+F.Intrinsic.Control.Try
+	V.Local.bIsValid.Declare(Boolean)
+	V.Local.sRPM.Declare(String)
+	V.Local.sPartFirst.Declare(String)
+	V.Local.sPartSecond.Declare(String)
+	V.Local.sTurn.Declare(String)
+	V.Local.sCFM.Declare(String)
+	V.Local.sTESP.Declare(String)
+	V.Local.sSQL.Declare(String)
+	V.Local.sHPCode.Declare(String)
+	V.Local.sAccessory.Declare(String)
+	V.Local.bAOne.Declare(Boolean)
+	V.Local.iHold.Declare(Long)
+	V.Local.sSize.Declare(String)
+	V.Local.sTargetRPM.Declare(String)
+	V.Local.bProcessRPMDFCM.Declare(Boolean,False)
+	V.Local.iCFM.Declare(Long)
+	V.Local.sMessage.Declare(String)
+	V.Local.sUnitType.Declare(String)
+	V.Local.sTempHold.Declare(String)
+	V.Local.sACFM.Declare(String)
+	
+	V.Local.sUnitType.Set(V.Args.sUnitType)
+	V.Local.sAccessory.Set("")
+	F.Intrinsic.String.Mid(V.Global.sProcessText(1),4,6,V.Local.sCFM)
+	F.Intrinsic.String.Mid(V.Global.sProcessText(1),10,3,V.Local.sTESP)
+	F.Intrinsic.String.Mid(V.Global.sProcessText(0),4,3,V.Local.sSize)
+	
+	F.Intrinsic.Control.If(V.Local.sTESP.IsNumeric,=,True)
+		V.Local.iHold.Set(V.Local.sTESP.Long)
+		
+		F.Intrinsic.Control.SelectCase(V.Local.iHold)
+			F.Intrinsic.Control.CaseRange(0,25)
+				V.Local.iHold.Set(25)
+			F.Intrinsic.Control.CaseRange(26,50)
+				V.Local.iHold.Set(50)
+			F.Intrinsic.Control.CaseRange(51,75)
+				V.Local.iHold.Set(75)
+			F.Intrinsic.Control.CaseRange(76,100)
+				V.Local.iHold.Set(100)
+			F.Intrinsic.Control.CaseRange(101,125)
+				V.Local.iHold.Set(125)
+			F.Intrinsic.Control.CaseRange(126,150)
+				V.Local.iHold.Set(150)
+			F.Intrinsic.Control.CaseRange(151,175)
+				V.Local.iHold.Set(175)
+			F.Intrinsic.Control.CaseRange(176,200)
+				V.Local.iHold.Set(200)
+			F.Intrinsic.Control.CaseRange(201,225)
+				V.Local.iHold.Set(225)
+			F.Intrinsic.Control.CaseRange(226,250)
+				V.Local.iHold.Set(250)
+			F.Intrinsic.Control.CaseRange(251,275)
+				V.Local.iHold.Set(275)
+			F.Intrinsic.Control.CaseRange(276,300)
+				V.Local.iHold.Set(300)
+			F.Intrinsic.Control.CaseRange(301,325)
+				V.Local.iHold.Set(325)
+			F.Intrinsic.Control.CaseRange(326,350)
+				V.Local.iHold.Set(350)
+			F.Intrinsic.Control.CaseRange(351,375)
+				V.Local.iHold.Set(375)
+			F.Intrinsic.Control.CaseRange(376,400)
+				V.Local.iHold.Set(400)
+			F.Intrinsic.Control.CaseRange(401,425)
+				V.Local.iHold.Set(425)
+			F.Intrinsic.Control.CaseRange(426,450)
+				V.Local.iHold.Set(450)
+			F.Intrinsic.Control.CaseRange(451,475)
+				V.Local.iHold.Set(475)
+			F.Intrinsic.Control.CaseRange(476,500)
+				V.Local.iHold.Set(500)
+			F.Intrinsic.Control.CaseRange(501,525)
+				V.Local.iHold.Set(525)
+			F.Intrinsic.Control.CaseRange(526,550)
+				V.Local.iHold.Set(550)
+			F.Intrinsic.Control.CaseRange(551,575)
+				V.Local.iHold.Set(575)
+			F.Intrinsic.Control.CaseRange(576,600)
+				V.Local.iHold.Set(600)
+			F.Intrinsic.Control.CaseRange(601,625)
+				V.Local.iHold.Set(625)
+			F.Intrinsic.Control.CaseRange(626,650)
+				V.Local.iHold.Set(650)
+			F.Intrinsic.Control.CaseRange(651,675)
+				V.Local.iHold.Set(675)
+		F.Intrinsic.Control.EndSelect
+		
+		V.Local.sTESP.Set(V.Local.iHold.String)
+		F.Intrinsic.String.LPad(V.Local.sTESP,"0","3",V.Local.sTESP)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.If(V.Local.sCFM.IsNumeric,=,True)
+		V.Local.iCFM.Set(V.Local.sCFM.Long)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.String.Build("SELECT ACFM FROM MTCX_RPM WHERE ACFM = '{0}' AND UNITTYPE = 'DFCM' AND RPM_SIZE = '{1}' ORDER BY ACFM",V.Local.sCFM,V.Local.sSize,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstACFM",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstACFM.EOF,=,True)
+		F.Intrinsic.String.Build("SELECT ACFM FROM MTCX_RPM WHERE ACFM > '{0}' AND UNITTYPE = 'DFCM' AND RPM_SIZE = '{1}' ORDER BY ACFM",V.Local.sCFM,V.Local.sSize,V.Local.sSQL)
+		F.ODBC.Connection!con.OpenLocalRecordSetRO("rstACFM2",V.Local.sSQL)
+		
+		F.Intrinsic.Control.If(V.ODBC.con!rstACFM2.EOF,<>,True)
+			V.Local.sCFM.Set(V.ODBC.con!rstACFM2.FieldValTrim!ACFM)
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.con!rstACFM2.Close
+		
+	F.Intrinsic.Control.Else
+		'Set the value to a variable just so it's easier to do the transforms
+		V.Local.sACFM.Set(V.ODBC.con!rstACFM.FieldValTrim!ACFM)
+		
+		F.Intrinsic.Control.If(V.Local.sACFM.IsNumeric)
+			F.Intrinsic.Control.If(V.Local.sACFM.Long,>=,V.Local.iCFM)
+				V.Local.iCFM.Set(V.Local.sACFM.Long)
+				V.Local.sCFM.Set(V.Local.sACFM)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstACFM.Close
+	
+	F.Intrinsic.String.Build("SELECT RPM FROM MTCX_RPM WHERE RPM_SIZE = '{0}' AND ACFM = '{1}' AND TESP = '{2}' AND UNITTYPE = 'DFCM'",V.Local.sSize,V.Local.sCFM,V.Local.sTESP,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordsetRO("rstRPM",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstRPM.EOF,=,True)
+		F.Intrinsic.String.Build("SELECT RPM FROM MTCX_RPM WHERE RPM_SIZE = '{0}' AND ACFM >= '{1}' AND TESP >= '{2}' AND UNITTYPE = 'DFCM' ORDER BY RPM ASC",V.Local.sSize,V.Local.sCFM,V.Local.sTESP,V.Local.sSQL)
+		
+		F.ODBC.Connection!con.OpenLocalRecordSetRO("rstRPM2",V.Local.sSQL)
+
+		F.Intrinsic.Control.If(V.ODBC.con!rstRPM2.EOF,<>,True)
+			F.Intrinsic.Control.If(V.ODBC.con!rstRPM2.FieldValRTrim!RPM,<>,"")
+				V.Local.sRPM.Set(V.ODBC.con!rstRPM2.FieldValTrim!RPM)				
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Build("No Match found for CFM: {0} AND TESP: {1}",V.Local.sCFM,V.Local.sTESP,V.Local.sMessage)
+				F.Intrinsic.UI.Msgbox(V.Local.sMessage)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.con!rstRPM2.Close
+	F.Intrinsic.Control.Else
+		V.Local.sRPM.Set(V.ODBC.con!rstRPM.FieldValTrim!RPM)
+		'DL2 logging
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstRPM.Close
+	
+	'DL2 Logging
+	F.Intrinsic.String.Mid(V.Global.sProcessText(1),1,1,V.Local.sHPCode)
+	
+	F.Intrinsic.Control.SelectCase(V.Local.sHPCode)
+		F.Intrinsic.Control.CaseAny("A","B","C","D","E")
+			V.Local.sHPCode.Set("1")
+		F.Intrinsic.Control.CaseAny("F","G")
+			V.Local.sHPCode.Set("2")
+		F.Intrinsic.Control.CaseAny("H","J")
+			V.Local.sHPCode.Set("4")
+		F.Intrinsic.Control.Case("K")
+			V.Local.sHPCode.Set("5")
+		F.Intrinsic.Control.CaseAny("L","M")
+			V.Local.sHPCode.Set("6")
+		F.Intrinsic.Control.Case("N")
+			V.Local.sHPCode.Set("7")
+	F.Intrinsic.Control.EndSelect
+	
+	F.Intrinsic.Control.If(V.Local.sHPCode,=,"2","OR",V.Local.sHPCode,=,"3")
+		F.Intrinsic.Control.If(V.Local.sSize.Long,>=,109,"AND",V.Local.sSize.Long,<=,118)
+			V.Local.sHPCode.Set("2")
+		F.Intrinsic.Control.ElseIf(V.Local.sSize.Long,=,215,"AND",V.Local.sUnitType,=,"DFC")
+			V.Local.sHPCode.Set("2")
+		F.Intrinsic.Control.Else
+			V.Local.sHPCode.Set("3")
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.If(V.Local.sHPCode.IsNumeric,=,False)
+		V.Local.bProcessRPMDFCM.Set(True)
+		F.Intrinsic.String.Build("RPM={0}()",V.Local.sRPM.Trim,V.Local.sRPM)
+		F.Intrinsic.Variable.AddRV("bIsValid",V.Local.bProcessRPMDFCM)
+		F.Intrinsic.Variable.AddRV("sPart1","")
+		F.Intrinsic.Variable.AddRV("sPart2","")
+		F.Intrinsic.Variable.AddRV("sTurn","")
+		F.Intrinsic.Variable.AddRV("sRPM",V.Local.sRPM)
+		F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.String.Build("SELECT FloatPostion FROM MTC_LINE_INFO WHERE UNITTYPE = '{0}' AND LineNumber = 1",V.Local.sUnitType,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstFloat",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstFloat.EOF,<>,True)
+		F.Intrinsic.String.Mid(V.Global.sProcessText(0),V.ODBC.con!rstFloat.FieldValLong!FloatPostion,V.Local.sAccessory)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Mid(V.Global.sProcessText(0),34,V.Local.sAccessory)
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstFloat.Close
+	
+	F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sAccessory,"sRegexPattern","A1")
+	
+	F.Intrinsic.Control.If(V.Args.sRegexReturn,<>,"")
+		F.Intrinsic.Control.If(V.Args.sRegexReturn,=,"A1")
+			V.Local.bAOne.Set(True)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Else
+		V.Local.bAOne.Set(False)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.If(V.Local.bAOne,=,True)
+		'Pad the value so that we don't have to constantly pad RPM
+		F.Intrinsic.String.LPad(V.Local.sRPM,"0",4,V.Local.sTempHold)
+		F.Intrinsic.String.Build("SELECT TURN, DVNP_NUM, RPM FROM MTCX_ADFCM WHERE HPCODE = '{0}' AND RPM = '{1}' ORDER BY RPM",V.Local.sHPCode,V.Local.sTempHold,V.Local.sSQL)
+		F.ODBC.Connection!con.OpenLocalRecordSetRO("rstCheck",V.Local.sSQL)
+
+		F.Intrinsic.Control.If(V.ODBC.con!rstCheck.EOF,<>,True)
+			F.Intrinsic.Control.If(V.ODBC.con!rstCheck.FieldValTrim!TURN,<>,"")
+				V.Local.sTurn.Set(V.ODBC.con!rstCheck.FieldValTrim!Turn)
+				V.Local.sPartFirst.Set(V.ODBC.con!rstCheck.FieldValTrim!DVNP_NUM)
+				V.Local.sPartSecond.Set("")
+				V.Local.bProcessRPMDFCM.Set(True)
+				F.Intrinsic.String.Build("RPM={0}({0}), T.O.={1}",V.Local.sRPM.Trim,V.Local.sTurn.RTrim,V.Local.sRPM)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Else
+			'DL2 Logging
+			F.Intrinsic.String.Build("SELECT TURN, DVNP_NUM, RPM FROM MTCX_ADFCM WHERE HPCODE = '{0}' AND RPM > '{1}' ORDER BY RPM",V.Local.sHPCode,V.Local.sTempHold,V.Local.sSQL)
+			F.ODBC.Connection!con.OpenLocalRecordSetRO("rstCheck2",V.Local.sSQL)
+			
+			F.Intrinsic.Control.If(V.ODBC.con!rstCheck2.EOF,<>,True)
+				F.Intrinsic.Control.If(V.ODBC.con!rstCheck2.FieldValTrim!TURN,<>,"")
+					V.Local.sTurn.Set(V.ODBC.con!rstCheck2.FieldValTrim!TURN)
+					V.Local.sPartFirst.Set(V.ODBC.con!rstCheck2.FieldValTrim!DVNP_NUM)
+					V.Local.sPartSecond.Set("")
+					F.Intrinsic.String.Build("RPM={0}({1}), T.O.={2}",V.Local.sRPM.Trim,V.ODBC.con!rstCheck2.FieldValTrim!RPM,V.Local.sTurn.RTrim,V.Local.sRPM)
+					V.Local.bProcessRPMDFCM.Set(True)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Build("No Match found for HPCODE: {0} AND RPM: {1}",V.Local.sHPCode,V.Local.sRPM,V.Local.sMessage)
+				F.Intrinsic.UI.Msgbox(V.Local.sMessage)
+			F.Intrinsic.Control.EndIf
+			
+			F.ODBC.con!rstCheck2.Close
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.con!rstCheck.Close
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Control.If(V.Local.sHPCode,=,"")
+			V.Local.sHPCode.Set("0")
+		F.Intrinsic.Control.EndIf
+	
+		'DL2 Logging
+		F.Intrinsic.String.LPad(V.Local.sRPM,"0",4,V.Local.sTempHold)
+		F.Intrinsic.String.Build("SELECT DVRP_NUM, DVNP_NUM, RPM FROM MTCX_FDFCM WHERE HPCODE = '{0}' AND RPM = '{1}'",V.Local.sHPCode,V.Local.sTempHold,V.Local.sSQL)
+		F.ODBC.Connection!con.OpenLocalRecordSetRO("rstFDFCM",V.Local.sSQL)
+		
+		F.Intrinsic.Control.If(V.ODBC.con!rstFDFCM.EOF,<>,True)
+			F.Intrinsic.Control.If(V.ODBC.con!rstFDFCM.FieldValTrim!DVRP_NUM,<>,"")
+				V.Local.sTurn.Set("")
+				V.Local.sPartFirst.Set(V.ODBC.con!rstFDFCM.FieldValTrim!DVRP_NUM)
+				V.Local.sPartSecond.Set(V.ODBC.con!rstFDFCM.FieldValTrim!DVNP_NUM)
+				V.Local.bProcessRPMDFCM.Set(True)
+				F.Intrinsic.String.Build("RPM={0}({1})",V.Local.sRPM.Trim,V.ODBC.con!rstFDFCM.FieldValTrim!RPM,V.Local.sRPM)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Else
+			'DL2 Logging
+			F.Intrinsic.String.Build("SELECT DVRP_NUM,DVNP_NUM,RPM FROM MTCX_FDFCM WHERE HPCODE = '{0}' AND RPM > '{1}' ORDER BY RPM",V.Local.sHPCode,V.Local.sTempHold,V.Local.sSQL)
+			F.ODBC.Connection!con.OpenLocalRecordSetRO("rstFDFCM2",V.Local.sSQL)
+			
+			F.Intrinsic.Control.If(V.ODBC.con!rstFDFCM2.EOF,<>,True)
+				F.Intrinsic.Control.If(V.ODBC.con!rstFDFCM2.FieldValTrim!DVRP_NUM,<>,"")
+					V.Local.sTurn.Set("")
+					V.Local.sPartFirst.Set(V.ODBC.con!rstFDFCM2.FieldValTrim!DVRP_NUM)
+					V.Local.sPartSecond.Set(V.ODBC.con!rstFDFCM2.FieldValTrim!DVNP_NUM)
+					'DL Logging
+					F.Intrinsic.String.Build("RPM={0}({1})",V.Local.sRPM.Trim,V.ODBC.con!rstFDFCM2.FieldValTrim!RPM,V.Local.sRPM)
+					V.Local.bProcessRPMDFCM.Set(True)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Build("No Match found for HPCODE: {0} AND RPM: {1}",V.Local.sHPCode,V.Local.sRPM,V.Local.sMessage)
+				F.Intrinsic.UI.Msgbox(V.Local.sMessage)
+			F.Intrinsic.Control.EndIf
+			
+			F.ODBC.con!rstFDFCM2.Close
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.con!rstFDFCM.Close
+		
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Variable.AddRV("sPart1",V.Local.sPartFirst)
+	F.Intrinsic.Variable.AddRV("sPart2",V.Local.sPartSecond)
+	F.Intrinsic.Variable.AddRV("sTurn",V.Local.sTurn)
+	F.Intrinsic.Variable.AddRV("sRPM",V.Local.sRPM)
+	F.Intrinsic.Variable.AddRV("bIsValid",V.Local.bProcessRPMDFCM)	
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessRPMDFCM.End
+
+Program.Sub.ProcessRPMIFL.Start
+F.Intrinsic.Control.Try
+	V.Local.sCFM.Declare(String)
+	V.Local.sTESP.Declare(String)
+	V.Local.sSQL.Declare(String)
+	V.Local.sHPCode.Declare(String)
+	V.Local.sAccessory.Declare(String)
+	V.Local.bAOne.Declare(Boolean)
+	V.Local.iHold.Declare(Long)
+	V.Local.sSize.Declare(String)
+	V.Local.bProcessRPMIFL.Declare(Boolean,False)
+	V.Local.iCFM.Declare(Long)
+	V.Local.sRPM.Declare(String)
+	V.Local.sPartFirst.Declare(String)
+	V.Local.sPartSecond.Declare(String)
+	V.Local.sTurn.Declare(String)
+	V.Local.sMessage.Declare(String)
+	V.Local.sACFM.Declare(String)
+	
+	V.Local.sAccessory.Set("")
+	
+	F.Intrinsic.String.Mid(V.Global.sProcessText(1),4,6,V.Local.sCFM)
+	F.Intrinsic.String.Mid(V.Global.sProcessText(1),10,3,V.Local.sTESP)
+	F.Intrinsic.String.Mid(V.Global.sProcessText(0),4,3,V.Local.sSize)
+	'DL2 logging
+	
+	F.Intrinsic.Control.If(V.Local.sTESP.IsNumeric,=,True)
+		V.Local.iHold.Set(V.Local.sTESP.Long)
+		
+		F.Intrinsic.Control.SelectCase(V.Local.iHold)
+			F.Intrinsic.Control.CaseRange(0,112)
+				V.Local.iHold.Set(100)
+			F.Intrinsic.Control.CaseRange(113,137)
+				V.Local.iHold.Set(125)
+			F.Intrinsic.Control.CaseRange(138,162)
+				V.Local.iHold.Set(150)
+			F.Intrinsic.Control.CaseRange(163,187)
+				V.Local.iHold.Set(175)
+			F.Intrinsic.Control.CaseRange(188,212)
+				V.Local.iHold.Set(200)
+			F.Intrinsic.Control.CaseRange(213,237)
+				V.Local.iHold.Set(225)
+			F.Intrinsic.Control.CaseRange(238,262)
+				V.Local.iHold.Set(250)
+			F.Intrinsic.Control.CaseRange(263,287)
+				V.Local.iHold.Set(275)
+			F.Intrinsic.Control.CaseRange(288,312)
+				V.Local.iHold.Set(300)
+			F.Intrinsic.Control.CaseRange(313,337)
+				V.Local.iHold.Set(325)
+			F.Intrinsic.Control.CaseRange(338,362)
+				V.Local.iHold.Set(350)
+			F.Intrinsic.Control.CaseRange(363,387)
+				V.Local.iHold.Set(375)
+			F.Intrinsic.Control.CaseRange(388,412)
+				V.Local.iHold.Set(400)
+			F.Intrinsic.Control.CaseRange(413,437)
+				V.Local.iHold.Set(425)
+			F.Intrinsic.Control.CaseRange(438,462)
+				V.Local.iHold.Set(450)
+			F.Intrinsic.Control.CaseRange(463,487)
+				V.Local.iHold.Set(475)
+			F.Intrinsic.Control.CaseRange(488,512)
+				V.Local.iHold.Set(500)
+			F.Intrinsic.Control.CaseRange(513,537)
+				V.Local.iHold.Set(525)
+			F.Intrinsic.Control.CaseRange(538,562)
+				V.Local.iHold.Set(550)
+			F.Intrinsic.Control.CaseRange(563,587)
+				V.Local.iHold.Set(575)
+			F.Intrinsic.Control.CaseRange(588,612)
+				V.Local.iHold.Set(600)
+			F.Intrinsic.Control.CaseRange(613,637)
+				V.Local.iHold.Set(625)
+			F.Intrinsic.Control.CaseRange(638,662)
+				V.Local.iHold.Set(650)
+			F.Intrinsic.Control.CaseRange(663,687)
+				V.Local.iHold.Set(675)
+		F.Intrinsic.Control.EndSelect
+		
+		V.Local.sTESP.Set(V.Local.iHold.String)
+		'DL2 Logging
+	F.Intrinsic.Control.Else
+		'DL2 logging
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.If(V.Local.sCFM.IsNumeric)
+		V.Local.iCFM.Set(V.Local.sCFM.Long)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.String.Build("SELECT ACFM FROM MTCX_RPM WHERE TESP = '{0}' AND UNITTYPE = 'IFL' ORDER BY ACFM",V.Local.sTESP,V.Local.sSQL)
+	'DL2 Logging
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstACFM",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstACFM.EOF,<>,True)
+		F.Intrinsic.Control.DoUntil(V.ODBC.con!rstACFM.EOF,=,True)
+			V.Local.sACFM.Set(V.ODBC.con!rstACFM.FieldValTrim!ACFM)
+			
+			F.Intrinsic.Control.If(V.Local.sACFM.IsNumeric,=,True)
+				'DL2 Logging
+				F.Intrinsic.Control.If(V.Local.sACFM.Long,>=,V.Local.iCFM)
+					V.Local.iCFM.Set(V.ODBC.con!rstACFM.FieldValLong!ACFM)
+					V.Local.sCFM.Set(V.ODBC.con!rstACFM.FieldValTrimg!ACFM)
+					F.Intrinsic.Control.ExitDo
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+			'DL2 Logging
+			F.ODBC.con!rstACFM.MoveNext
+		F.Intrinsic.Control.Loop
+	F.Intrinsic.Control.Else
+		'DL2 Logging
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstACFM.Close
+	
+	F.Intrinsic.String.Build("SELECT RPM FROM MTCX_RPM WHERE ACFM = '{0}' AND TESP = '{1}' AND UNITTYPE = 'IFL'",V.Local.sCFM,V.Local.sTESP,V.Local.sSQL)
+	'DL2 Logging
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstRPM",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstRPM.EOF,<>,True)
+		V.Local.sRPM.Set(V.ODBC.con!rstRPM.FieldValTrim!RPM)
+		'DL2 Logging
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("SELECT RPM FROM MTCX_RPM WHERE ACFM >= '{0}' AND TESP >= '{1}' AND UNITTYPE = 'IFL' ORDER BY RPM ASC",V.Local.sCFM,V.Local.sTESP,V.Local.sSQL)
+		'DL2 Logging
+		F.ODBC.Connection!con.OpenLocalRecordSetRO("rstRPM2",V.Local.sSQL)
+		
+		F.Intrinsic.Control.If(V.ODBC.con!rstRPM2.EOF,<>,True)
+			F.Intrinsic.Control.If(V.ODBC.con!rstRPM2.FieldValTrim!RPM,<>,"")
+				V.Local.sRPM.Set(V.ODBC.con!rstRPM2.FieldValTrim!RPM)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Else
+			'DL2 Logging
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.con!rstRPM2.Close
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstRPM.Close
+	
+	'DL2 Logging
+	F.Intrinsic.String.Mid(V.Global.sProcessText(1),1,1,V.Local.sHPCode)
+	F.Intrinsic.Control.SelectCase(V.Local.sHPCode)
+		F.Intrinsic.Control.CaseAny("A","B","C","D","E")
+			V.Local.sHPCode.Set("1")
+		F.Intrinsic.Control.CaseAny("F","G")
+			F.Intrinsic.Control.If(V.Local.sRPM.Long,<=,2988)
+				V.Local.sHPCode.Set("2")
+			F.Intrinsic.Control.ElseIf(V.Local.sRPM.Long,>,2988)
+				V.Local.sHPCode.Set("3")
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Case("H")
+			V.Local.sHPCode.Set("3")
+		F.Intrinsic.Control.Case("J")
+			V.Local.sHPCode.Set("4")
+		F.Intrinsic.Control.Case("K")
+			V.Local.sHPCode.Set("5")
+		F.Intrinsic.Control.CaseAny("L","M")
+			V.Local.sHPCode.Set("6")
+		F.Intrinsic.Control.Case("N")
+			V.Local.sHPCode.Set("7")
+	F.Intrinsic.Control.EndSelect
+	
+	'Early Exit, add return variables
+	F.Intrinsic.Control.If(V.Local.sHPCode.IsNumeric)
+		V.Local.bProcessRPMIFL.Set(True)
+		F.Intrinsic.String.Build("RPM={0}()",V.Local.sRPM.Trim,V.Local.sRPM)
+		
+		F.Intrinsic.Variable.AddRV("sPart1",V.Local.sPartFirst)
+		F.Intrinsic.Variable.AddRV("sPart2",V.Local.sPartSecond)
+		F.Intrinsic.Variable.AddRV("sTurn",V.Local.sTurn)
+		F.Intrinsic.Variable.AddRV("sRPM",V.Local.sRPM)
+		F.Intrinsic.Variable.AddRV("bIsValid",V.Local.bProcessRPMIFL)
+		F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.EndIf
+	
+	'DL2 Logging
+	
+	V.Local.sSQL.Set("SELECT FloatPostion FROM MTC_LINE_INFO WHERE UnitType = 'IFL' AND LineNumber = '1'")
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstFloat",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstFloat.EOF,<>,True)
+		F.Intrinsic.String.Mid(V.Global.sProcessText(0),V.ODBC.con!rstFloat.FieldValLong!FloatPostion,V.Local.sAccessory)
+		'DL2 Logging
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Mid(V.Global.sProcessText(0),34,V.Local.sAccessory)
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstFloat.Close
+	
+	F.Intrinsic.Control.CallSub(RegexSplit,"sRegexTestValue",V.Local.sAccessory,"sRegexPattern","A1")
+	
+	F.Intrinsic.Control.If(V.Args.sRegexReturn,<>,"")
+		F.Intrinsic.Control.If(V.Args.sRegexReturn,=,"A1")
+			V.Local.bAOne.Set(True)
+			'DL2 Logging
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Else
+		V.Local.bAOne.Set(False)
+		'DL2 Logging
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.If(V.Local.bAOne)
+		'DL2 Logging
+		F.Intrinsic.String.Build("SELECT TURN, DVNP_NUM FROM MTCX_AIFL WHERE HPCODE = '{0}' AND RPM = '{1}'")
+		F.ODBC.Connection!con.OpenLocalRecordSetRO("rstTurn",V.Local.sSQL)
+		
+		F.Intrinsic.Control.If(V.ODBC.con!rstTurn.EOF,<>,True)
+			F.Intrinsic.Control.If(V.ODBC.con!rstTurn.FieldValTrim!TURN,<>,"")
+				V.Local.sTurn.Set(V.ODBC.con!rstTurn.FieldValTrim!TURN)
+				V.Local.sPartFirst.Set(V.ODBC.con!rstTurn.FieldValTrim!DVNP_NUM)
+				'DL Logging
+				V.Local.sPartFirst.Set("")
+				F.Intrinsic.String.Build("RPM={0}({0}), T.O.={1}",V.Local.sRPM.Trim,V.Local.sTurn.RTrim,V.Local.sRPM)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Else
+			'DL2 Logging
+			F.Intrinsic.String.Build("SELECT TURN,DVNP_NUM, RPM FROM MTCX_AIFL WHERE HPCODE = '{0}' AND RPM > '{1}' ORDER BY RPM",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+			F.ODBC.Connection!con.OpenLocalRecordsetRO("rstTurn2",V.Local.sSQL)
+			
+			F.Intrinsic.Control.If(V.ODBC.con!rstTurn2.EOF,<>,True)
+				F.Intrinsic.Control.If(V.ODBC.con!rstTurn2.FieldValTrim!TURN,<>,"")
+					V.Local.sTurn.Set(V.ODBC.con!rstTurn2.FieldValTrim!TURN)
+					V.Local.sPartFirst.Set(V.ODBC.con!rstTurn2.FieldValTrim!DVNP_NUM)
+					'DL Logging
+					V.Local.sPart2.Set("")
+					V.Local.bProcessRPMIFL.Set(True)
+					F.Intrinsic.String.Build("RPM={0}({1}), T.O.={2}",V.Local.sRPM.Trim,V.ODBC.con!rstTurn2.FieldValTrim!RPM,V.Local.sTurn,V.Local.sRPM)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Build("No Match found for HPCode: {0} AND RPM: {1}",V.Local.sHPCode,V.Local.sRPM,V.Local.sMessage)
+				F.Intrinsic.UI.Msgbox(V.Local.sMessage)
+			F.Intrinsic.Control.EndIf
+			
+			F.ODBC.con!rstTurn2.Close			
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.con!rstTurn.Close
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Control.If(V.Local.sHPCode,<=,2)
+			'DL Logging
+			F.Intrinsic.String.Build("SELECT TURN, DVNP_NUM FROM MTCX_AIFL WHERE HPCODE = '{0}' AND RPM = '{1}'",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+			'DL2 Logging
+			F.ODBC.Connection!con.OpenLocalRecordSetRO("rstTurn",V.Local.sSQL)
+			
+			F.Intrinsic.Control.If(V.ODBC.con!rstTurn.EOF,<>,True)
+				F.Intrinsic.Control.If(V.ODBC.con!rstTurn.FieldValTrim!TURN,<>,"")
+					V.Local.sTurn.Set(V.ODBC.con!rstTurn.FieldValTrim!TURN)
+					V.Local.sPartFirst.Set(V.ODBC.con!rstTurn.FieldValTrim!DVNP_NUM)
+					V.Local.sPartSecond.Set("")
+					V.Local.bProcessRPMIFL.Set(True)
+					F.Intrinsic.String.Build("RPM={0}({0}), T.O.={1}",V.Local.sRPM.Trim,V.Local.sTurn.Trim,V.Local.sRPM)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.Else
+				'DL2 Logging
+				F.Intrinsic.String.Build("SELECT TURN, DVNP_NUM, RPM FROM MTCX_AIFL WHERE HPCODE = '{0}' AND RPM > '{1}' ORDER BY RPM",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+				F.ODBC.Connection!con.OpenLocalRecordSetRO("rstTurn2",V.Local.sSQL)
+				
+				F.Intrinsic.Control.If(V.ODBC.con!rstTurn2.EOF,<>,True)
+					F.Intrinsic.Control.If(V.ODBC.con!rstTurn2.FieldValTrim!TURN,<>,"")
+						V.Local.sTurn.Set(V.ODBC.con!rstTurn2.FieldValTrim!TURN)
+						V.Local.sPartFirst.Set(V.ODBC.con!rstTurn2.FieldValTrim!DVNP_NUM)
+						V.Local.sPart2.Set("")
+						V.Local.bProcessRPMIFL.Set(True)
+						F.Intrinsic.String.Build("RPM={0}({1}), T.O.={2}",V.Local.sRPM.Trim,V.ODBC.con!rstTurn2.FieldValTrim!RPM,V.Local.sTurn.Trim,V.Local.sRPM)
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.Else
+					F.Intrinsic.String.Build("No Match found for HPCODE: {0} AND RPM: {1}",V.Local.sHPCode,V.Local.sRPM,V.Local.sMessage)
+					F.Intrinsic.UI.Msgbox(V.Local.sMessage)
+				F.Intrinsic.Control.EndIf
+				
+				F.ODBC.con!rstTurn2.Close
+			F.Intrinsic.Control.EndIf
+			
+			F.ODBC.con!rstTurn.Close
+		F.Intrinsic.Control.Else
+			'DL2 Logging
+			F.Intrinsic.String.Build("SELECT DVRP_NUM, DVNP_NUM FROM MTCX_FIFL WHERE HPCODE = '{0}' AND RPM = '{1}'",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+			'DL2 Logging
+			F.ODBC.Connection!con.OpenLocalRecordSetRO("rstFIFL",V.Local.sSQL)
+			
+			F.Intrinsic.Control.If(V.ODBC.con!rstFIFL.EOF,<>,True)
+				F.Intrinsic.Control.If(V.ODBC.con!rstFIFL.FieldValTrim!DVRP_NUM,<>,"")
+					V.Local.sTurn.Set("")
+					V.Local.sPartFirst.Set(V.ODBC.con!rstFIFL.FieldValTrim!DVRP_NUM)
+					V.Local.sPartSecond.Set(V.ODBC.con!rstFIFL.FieldValTrim!DVNP_NUM)
+					'DL Logging
+					V.Local.bProcessRPMIFL.Set(True)
+					F.Intrinsic.String.Build("RPM={0}({0})",V.Local.sRPM.Trim,V.Local.sRPM)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.Else
+				'DL2 Logging
+				F.Intrinsic.String.Build("SELECT DVRP_NUM, DVNP_NUM, RPM FROM MTCX_FIFL WHERE HPCODE = '{0}' AND RPM > '{1}' ORDER BY RPM",V.Local.sHPCode,V.Local.sRPM,V.Local.sSQL)
+				F.ODBC.Connection!con.OpenLocalRecordSetRO("rstFIFL2",V.Local.sSQL)
+				
+				F.Intrinsic.Control.If(V.ODBC.con!rstFIFL2.EOF,<>,True)
+					F.Intrinsic.Control.If(V.ODBC.con!rstFIFL2.FieldValTrim!DVRP_NUM,<>,"")
+						V.Local.sTurn.Set("")
+						V.Local.sPartFirst.Set(V.ODBC.con!rstFIFL2.FieldValTrim!DVRP_NUM)
+						V.Local.sPartSecond.Set(V.ODBC.con!rstFIFL2.FieldValTrim!DVNP_NUM)
+						'DL Logging
+						V.Local.bProcessRPMIFL.Set(True)
+						F.Intrinsic.String.Build("RPM={0}({1})",V.Local.sRPM.Trim,V.ODBC.con!rstACFM.FieldValTrim!RPM,V.Local.sRPM)
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.Else
+					F.Intrinsic.String.Build("No Match found for HPCODE: {0} AND RPM: {1}",V.Local.sHPCode,V.Local.sRPM,V.Local.sMessage)
+					F.Intrinsic.UI.Msgbox(V.Local.sMessage)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+			
+			F.ODBC.con!rstFIFL.Close
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Variable.AddRV("sPart1",V.Local.sPartFirst)
+	F.Intrinsic.Variable.AddRV("sPart2",V.Local.sPartSecond)
+	F.Intrinsic.Variable.AddRV("sTurn",V.Local.sTurn)
+	F.Intrinsic.Variable.AddRV("sRPM",V.Local.sRPM)
+	F.Intrinsic.Variable.AddRV("bIsValid",V.Local.bProcessRPMIFL)
+	
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessRPMIFL.End
+
+Program.Sub.TestPart.Start
+F.Intrinsic.Control.Try
+	V.Local.sPart.Declare(String)
+	V.Local.sDescription.Declare(String)
+	V.Local.sProductLine.Declare(String)
+	V.Local.sSQL.Declare(String)
+	
+	V.Local.sDescription.Set(V.Args.sDescription)
+	V.Local.sProductLine.Set(V.Args.sProductLine)
+	
+
+	F.Intrinsic.String.Build("Select Part From Inventory_Mstr Where Part Like '{0}'",V.Args.sPart.Left20,V.Local.sSQL)
+	
+	F.Intrinsic.String.Build("Opening rstTestPart With Query {0}",V.Local.sSQL,V.Global.sLogFileText)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	
+	F.ODBC.Connection!con.OpenLocalRecordSetRO("rstTestPart",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.con!rstTestPart.EOF,<>,True)
+		V.Local.sPart.Set(V.ODBC.con!rstTestPart.FieldValTrim!Part)
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.con!rstTestPart.Close
+	
+	F.Intrinsic.Control.If(V.Local.sPart,<>,V.Args.sPart)
+		F.Intrinsic.String.RPad(V.Local.sDescription," ",30,V.Local.sDescription)
+		F.Intrinsic.String.RPad(V.Local.sProductLine," ",3,V.Local.sProductLine)
+		F.Intrinsic.String.RPad(V.Args.sPart," ",20,V.Local.sPart)
+		F.Global.Inventory.CreatePart(V.Local.sPart,"EA",V.Local.sDescription,"",V.Local.sProductLine,"MS","","","0","NOMAINT")
+		F.Intrinsic.String.Build("Part: {0} created.",V.Local.sPart,V.Global.sLogFileText)
+		'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	F.Intrinsic.Control.EndIf
+	
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.TestPart.End
+
+Program.Sub.RegexSplit.Start
+F.Intrinsic.Control.Try
+	V.Local.sRegexTestValue.Declare(String)
+	V.Local.sRegexPattern.Declare(String)
+	V.Local.sRegexMatch.Declare(String)
+	V.Local.sRegexTempValues.Declare(String)
+	V.Local.sRegexReturn.Declare(String)
+	
+	V.Local.sRegexTestValue.Set(V.Args.sRegexTestValue)
+	V.Local.sRegexPattern.Set(V.Args.sRegexPattern)
+	
+	F.Intrinsic.String.RegExMatch(V.Local.sRegexTestValue,V.Local.sRegexPattern,True,V.Local.sRegexMatch)
+	
+	F.Intrinsic.Control.If(V.Local.sRegexMatch.Trim,<>,"")
+		F.Intrinsic.String.Split(V.Local.sRegexMatch,"@!@",V.Local.sRegexTempValues)
+		F.Intrinsic.String.Split(V.Local.sRegexTempValues,"*!*",V.Local.sRegexReturn)
+		F.Intrinsic.Variable.AddRV("sRegexReturn",V.Local.sRegexReturn(1))
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Variable.AddRV("sRegexReturn","")
+	F.Intrinsic.Control.EndIf
+	
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.RegexSplit.End
+
+Program.Sub.AddLogInformationToFileDL.Start
+F.Intrinsic.Control.Try
+	V.Local.sLogLine.Declare(String)
+	V.Local.iHandle.Declare(Long)
+	
+	F.Intrinsic.String.Build("{0}{1} ({2}) - {3}",V.Ambient.NewLine,V.Ambient.Now,V.Ambient.SubroutineCalledFrom,V.Global.sLogFileText,V.Local.sLogLine)
+	'F.Intrinsic.File.Append2FileNewLine(V.Global.sLogFilePath,V.Local.sLogLine)
+	
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.AddLogInformationToFileDL.End
+
+Program.Sub.CallBOMUpload.Start
+F.Intrinsic.Control.Try
+	V.Local.sJobStreamFileContent.Declare(String)
+	V.Local.iUserID.Declare(Long)
+	V.Local.sJobStreamFilePath.Declare(String)
+	V.Local.sFujitsuPath.Declare(String)
+	V.Local.sCommand.Declare(String)
+	V.Local.iHandle.Declare(Long)
+	
+	F.Global.Security.GetUserId(V.Caller.User,V.Caller.CompanyCode,V.Local.iUserID)
+	
+	'We need to build the jobstream file
+	F.Intrinsic.String.Build("LFVER::1{0}TERMINAL::{1}{0}USER::{2}{0}COMPANYCODE::{3}{0}FILESDIR::{4}{0}",V.Ambient.NewLine,V.Caller.Terminal,V.Caller.User,V.Caller.CompanyCode,V.Caller.FilesDir,V.Local.sJobStreamFileContent)
+	F.Intrinsic.String.Build("{0}PROGRAMSDIR::{1}{2}ETCDIR::{3}{2}LC1::000{2}LC2::000{2}CALLER::GCG_5176_Configurator.g2u{2}",V.Local.sJobStreamFileContent,V.Caller.ProgramsDir,V.Ambient.NewLine,V.Caller.ConfigDir,V.Local.sJobStreamFileContent)
+	F.Intrinsic.String.Build("{0}SWITCHES::E{1}HWND::{1}PID::{2}{1}MENUTYPE::0{1}DEBUG::0{1}DB::P{1}GSSVER::{3}{1}",V.Local.sJobStreamFileContent,V.Ambient.NewLine,V.Caller.PID,V.Caller.GSSVersion,V.Local.sJobStreamFileContent)
+	F.Intrinsic.String.Build("{0}USERID::{1}{2}MENUIPM::{3}{2}ELEMENTLIST{2}PROGRAM001::XUPLBOMG{2}FLAG001::{2}",V.Local.sJobStreamFileContent,V.Local.iUserID.String,V.Ambient.NewLine,V.System.GSSMC,V.Local.sJobStreamFileContent)
+	
+	'Add parameters for XUPLBOMG to Jobstream file
+	F.Intrinsic.String.Build("{0}CMPNY::{1}{2}TRMNL::{3}{2}USER-ID::{4}{2}FILENAME::{5}{2}",V.Local.sJobStreamFileContent,V.Caller.CompanyCode,V.Ambient.NewLine,V.Caller.Terminal,V.Local.iUserID,V.Args.sFilePath,V.Local.sJobStreamFileContent)
+	F.Intrinsic.String.Build("{0}SUPPRESS-FLAG::X{1}CREATE-PARENT-FLAG::{1}CREATE-CHILD-FLAG::{1}UPD-CHILD-DESC-FLAG::{1}CRE8-RTR-MATL-FLAG::Y",V.Local.sJobStreamFileContent,V.Ambient.NewLine,V.Local.sJobStreamFileContent)
+	
+	F.Intrinsic.String.Build("{0}JobStream_{1}{2}_{3}_{4}",V.Caller.LocalGSSTempDir,V.Caller.Terminal,V.Caller.User,V.Ambient.Date.Formatyyyymmdd,V.Ambient.Time.FormatHHmmss,V.Local.sJobStreamFilePath)
+	
+	F.Intrinsic.File.String2File(V.Local.sJobStreamFilePath,V.Local.sJobStreamFileContent)
+	
+	'Set the path of the parmfile environment variable
+	F.Intrinsic.Task.SetEnvironmentVariable("GSSPARMFILE",V.Local.sJobstreamFilePath)
+	F.Intrinsic.Task.SetEnvironmentVariable("UPLOAD-INPUT-FILE-NAME",V.Args.sFilePath)
+	F.Intrinsic.Task.SetEnvironmentVariable("UPLOAD-SCREENLESS-MODE","1")
+	
+	'Get the fujitsu path
+	V.Local.sFujitsuPath.Set(V.System.FujitsuPath)
+	
+	F.Intrinsic.Control.If(V.Local.sFujitsuPath,=,"")
+		F.Intrinsic.String.Build("{0}\BIN",V.Caller.ProgramsDir,V.Local.sFujitsuPath)
+	F.Intrinsic.Control.EndIf
+	
+	'Set the command
+	F.Intrinsic.String.Build("{0}\GSSTASK.exe*!*{1}{2}{1}",V.Local.sFujitsuPath,V.Ambient.DblQuote,V.Local.sJobStreamFilePath,V.Local.sCommand)
+	F.Intrinsic.String.Split(V.Local.sCommand,"*!*",V.Local.sCommand)
+	
+	'Execute the command
+	F.Intrinsic.Task.ShellExecSync(V.Caller.Handle,"Open",V.Local.sCommand(0),V.Local.sCommand(1),"",0)
+	
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(errorhandler, "Sub", V.Ambient.CurrentSubroutine, "ErrNo", V.Ambient.ErrorNumber, "ErrDesc", V.Ambient.ErrorDescription)
+F.Intrinsic.Control.EndTry
+Program.Sub.CallBOMUpload.End
+
+Program.Sub.errorhandler.Start
+F.Intrinsic.Control.Try
+	V.Local.sError.Declare(String)
+	
+	F.Intrinsic.String.Build("Project: GCG_5176_Configurator.g2u {0}{0}Subroutine: {1}{0}Error {2} occurred with description {3}",V.Ambient.NewLine, V.Args.Sub,V.Args.ErrNo,V.Args.ErrDesc,V.Local.sError)
+	V.Global.sLogFileText.Set(V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	'F.Intrinsic.Control.CallSub(AddLogInformationToFileDL)
+	
+	F.Intrinsic.Control.CallSub(Unload)
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: GCG_5176_Configurator.g2u {0}{0}Subroutine: {1}{0}Error {2} occurred with description {3}",V.Ambient.NewLine, V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.Control.CallSub(Unload)
+F.Intrinsic.Control.EndTry
+Program.Sub.errorhandler.End
+
+Program.Sub.Unload.Start
+F.Intrinsic.Control.Try
+	
+	'For testing in live company for specific users
+	'F.Intrinsic.Control.If(V.Caller.User,=,"SSTALLIN","OR",V.Caller.User,=,"PNICKSON",V.Caller.User,=,"LRABE")
+		'V.Passed.777777.Set(True)
+		'Close connection and program
+		F.ODBC.Connection!con.Close
+		F.Intrinsic.Control.End		
+	'F.Intrinsic.Control.EndIf
+	
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: GCG_5176_Configurator.g2u {0}{0}Subroutine: {1}{0}Error {2} occurred with description {3}",V.Ambient.NewLine, V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.Unload.End
