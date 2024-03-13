@@ -1,0 +1,195 @@
+/* ==========================================
+ * TABLE: MTC_FORMULA
+ * ========================================== */
+CREATE TABLE "MTC_FORMULA"(
+ "FormulaNum" INTEGER NOT NULL ,
+ "Description" CHAR(70),
+ "Calculation" LONGVARCHAR,
+ "SUB_DESCR" CHAR(30) NOT NULL ,
+ "UnitType" CHAR(30) NOT NULL ,
+ PRIMARY KEY ("FormulaNum"));
+
+CREATE UNIQUE INDEX "PK_FormulaNum" USING 0 ON "MTC_FORMULA"("FormulaNum");
+
+
+/* ==========================================
+ * TABLE: MTC_HEADER
+ * ========================================== */
+CREATE TABLE "MTC_HEADER"(
+ "UnitType" CHAR(30) NOT NULL ,
+ "Description" CHAR(60),
+ "OutPutPath" CHAR(255),
+ PRIMARY KEY ("UnitType"));
+
+CREATE UNIQUE INDEX "PK_UnitType" USING 0 ON "MTC_HEADER"("UnitType");
+
+
+/* ==========================================
+ * TABLE: MTC_LINE_INFO
+ * ========================================== */
+CREATE TABLE "MTC_LINE_INFO"(
+ "UnitType" CHAR(30) NOT NULL ,
+ "LineNumber" INTEGER NOT NULL ,
+ "FloatPostion" INTEGER,
+ "column0" CHAR(30) NOT NULL ,
+ "column1" INTEGER NOT NULL ,
+ "column2" INTEGER,
+ PRIMARY KEY ("UnitType", "LineNumber"));
+
+
+/* ==========================================
+ * TABLE: MTC_NUM
+ * ========================================== */
+CREATE TABLE "MTC_NUM"(
+ "LAST_NUM" CHAR(20),
+ "column0" CHAR(20));
+
+
+/* ==========================================
+ * TABLE: MTC_PL
+ * ========================================== */
+CREATE TABLE "MTC_PL"(
+ "UnitType" CHAR(30),
+ "VALUE" CHAR(3),
+ "PL" CHAR(20));
+
+
+/* ==========================================
+ * TABLE: MTC_RULE_HEADERS
+ * ========================================== */
+CREATE TABLE "MTC_RULE_HEADERS"(
+ "RuleNumber" INTEGER NOT NULL ,
+ "UnitType" CHAR(30),
+ "Description" CHAR(60),
+ "ResultPart" CHAR(20),
+ "ResultDescription" CHAR(30),
+ "QUANTITY" DOUBLE,
+ "IsDISTINCT" CHAR(1),
+ "ModelGroup" CHAR(75),
+ "BOM_TYPE" CHAR(1) NOT NULL ,
+ "SortCode" VARCHAR(250),
+ "ComponentID" VARCHAR(250),
+ PRIMARY KEY ("RuleNumber"));
+
+CREATE UNIQUE INDEX "PK_RuleNumber" USING 0 ON "MTC_RULE_HEADERS"("RuleNumber");
+
+
+/* ==========================================
+ * TABLE: MTC_RULE_LINES
+ * ========================================== */
+CREATE TABLE "MTC_RULE_LINES"(
+ "RuleNumber" INTEGER NOT NULL ,
+ "Seq" INTEGER NOT NULL ,
+ "UnitType" CHAR(30),
+ "LineNumber" INTEGER,
+ "StartPosition" INTEGER,
+ "Length" INTEGER,
+ "Value" CHAR(50),
+ "IsCalc" CHAR(1),
+ "FormulaNum" INTEGER,
+ "FormulaResult" CHAR(30),
+ "column0" INTEGER NOT NULL ,
+ "column1" INTEGER NOT NULL ,
+ "column2" CHAR(30),
+ "column3" INTEGER,
+ "column4" INTEGER,
+ "column5" INTEGER,
+ "column6" CHAR(50),
+ "column7" CHAR(1),
+ "column8" INTEGER,
+ "column9" CHAR(30),
+ PRIMARY KEY ("RuleNumber", "Seq"));
+
+
+/* ==========================================
+ * TABLE: MTC_VARIABLES
+ * ========================================== */
+CREATE TABLE "MTC_VARIABLES"(
+ "VariableNumber" INTEGER NOT NULL ,
+ "Name" CHAR(70),
+ "LineNumber" INTEGER,
+ "StartPosition" INTEGER,
+ "Length" INTEGER,
+ "Value" CHAR(50),
+ "Result" CHAR(60),
+ PRIMARY KEY ("VariableNumber"));
+
+CREATE UNIQUE INDEX "PK_VariableNumber" USING 0 ON "MTC_VARIABLES"("VariableNumber");
+
+
+/* ==========================================
+ * TABLE: MTCX_ADFCM
+ * ========================================== */
+CREATE TABLE "MTCX_ADFCM"(
+ "HPCODE" INTEGER,
+ "RPM" CHAR(20),
+ "TURN" CHAR(20),
+ "DVNP_NUM" CHAR(20));
+
+
+/* ==========================================
+ * TABLE: MTCX_ADFL
+ * ========================================== */
+CREATE TABLE "MTCX_ADFL"(
+ "HPCODE" INTEGER,
+ "RPM" CHAR(20),
+ "TURN" CHAR(20),
+ "DVNP_NUM" CHAR(20));
+
+
+/* ==========================================
+ * TABLE: MTCX_AIFL
+ * ========================================== */
+CREATE TABLE "MTCX_AIFL"(
+ "HPCODE" INTEGER,
+ "RPM" CHAR(20),
+ "TURN" CHAR(20),
+ "DVNP_NUM" CHAR(20));
+
+
+/* ==========================================
+ * TABLE: MTCX_FDFCM
+ * ========================================== */
+CREATE TABLE "MTCX_FDFCM"(
+ "HPCODE" INTEGER,
+ "RPM" CHAR(20),
+ "DVRP_NUM" CHAR(20),
+ "DVNP_NUM" CHAR(20));
+
+
+/* ==========================================
+ * TABLE: MTCX_FDFL
+ * ========================================== */
+CREATE TABLE "MTCX_FDFL"(
+ "HPCODE" INTEGER,
+ "RPM" CHAR(20),
+ "DVRP_NUM" CHAR(20),
+ "DVNP_NUM" CHAR(20));
+
+
+/* ==========================================
+ * TABLE: MTCX_FIFL
+ * ========================================== */
+CREATE TABLE "MTCX_FIFL"(
+ "HPCODE" INTEGER,
+ "RPM" CHAR(20),
+ "DVRP_NUM" CHAR(20),
+ "DVNP_NUM" CHAR(20));
+
+
+/* ==========================================
+ * TABLE: MTCX_RPM
+ * ========================================== */
+CREATE TABLE "MTCX_RPM"(
+ "ACFM" CHAR(6),
+ "TESP" CHAR(10),
+ "RPM" CHAR(20),
+ "UnitType" CHAR(30),
+ "RPM_SIZE" CHAR(10),
+ "column0" CHAR(6),
+ "column1" CHAR(10),
+ "column2" CHAR(20),
+ "column3" CHAR(30),
+ "column4" CHAR(10));
+
+
